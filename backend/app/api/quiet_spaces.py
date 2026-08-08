@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Query
 
 from app.api.deps import settings_dep, store_dep
 from app.config import Settings
-from app.lib.data_store import DataStore
+from app.lib.data_store import ReferenceDataStore
 from app.schemas import QuietSpaceResponse, RefugeCategory
 from app.services.refuge_service import find_quiet_spaces
 
@@ -20,7 +20,7 @@ def list_quiet_spaces(
     radius_m: int | None = Query(None, ge=100, le=5000),
     limit: int = Query(5, ge=1, le=20),
     category: RefugeCategory | None = Query(None, description="green_space | indoor, omitted means all"),
-    store: DataStore = Depends(store_dep),
+    store: ReferenceDataStore = Depends(store_dep),
     settings: Settings = Depends(settings_dep),
 ) -> QuietSpaceResponse:
     effective_radius = radius_m if radius_m is not None else settings.default_radius_metres

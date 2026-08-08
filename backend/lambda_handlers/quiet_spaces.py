@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 from app.config import get_settings
 from app.errors import AppError
-from app.lib.data_store import get_data_store
+from app.lib.data_store import get_configured_data_store
 from app.schemas import QuietSpaceQuery
 from app.services.refuge_service import find_quiet_spaces
 from lambda_handlers.common import (
@@ -57,7 +57,8 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
             query.lng,
             radius_m=query.radius_m,
             limit=query.limit,
-            store=get_data_store(settings.data_dir),
+            category=query.category,
+            store=get_configured_data_store(settings),
             settings=settings,
         )
         return json_response(

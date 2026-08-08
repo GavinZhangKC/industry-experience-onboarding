@@ -74,7 +74,7 @@ def _replace_dependencies(monkeypatch, plan_routes):
     store = SimpleNamespace(busy_areas=[])
     monkeypatch.setattr(routes, "get_settings", lambda: settings)
     monkeypatch.setattr(routes, "get_maps_client", lambda actual: maps_client)
-    monkeypatch.setattr(routes, "get_data_store", lambda data_dir: store)
+    monkeypatch.setattr(routes, "get_configured_data_store", lambda actual: store)
     monkeypatch.setattr(routes, "plan_routes", plan_routes)
     return settings, maps_client, store
 

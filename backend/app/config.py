@@ -6,6 +6,8 @@ Copy .env.example to .env and fill it in. .env is gitignored.
 
 from functools import lru_cache
 
+from typing import Literal
+
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
@@ -16,6 +18,15 @@ class Settings(BaseSettings):
     # a Google key or a billing account. Switch to "google" when the key exists.
     maps_provider: str = Field("mock", description="mock | google")
     google_maps_api_key: str = ""
+
+    # --- Reference data --------------------------------------------------
+    # JSON remains the zero-infrastructure local default. Lambda can switch
+    # to the existing Aurora Serverless cluster through the RDS Data API.
+    data_backend: Literal["json", "aurora"] = "json"
+    aws_region: str = "ap-southeast-2"
+    db_cluster_arn: str = ""
+    db_secret_arn: str = ""
+    db_name: str = "postgres"
 
     # --- CORS (BE-F5) -----------------------------------------------------
     allowed_origins: str = "http://localhost:5173,http://localhost:3000"

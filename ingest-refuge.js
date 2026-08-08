@@ -1,4 +1,3 @@
-require('dotenv').config();
 const fetch = require('node-fetch');
 const { query } = require('./db');
 
@@ -47,6 +46,9 @@ async function ingestRefuges() {
     'https://data.melbourne.vic.gov.au/api/explore/v2.1/catalog/datasets/landmarks-and-places-of-interest-including-schools-theatres-health-services-spor/records?limit=100'
   );
   const data = await res.json();
+  if (!res.ok || !Array.isArray(data.results)) {
+    throw new Error(`Refuge source returned HTTP ${res.status}`);
+  }
   console.log(`Fetched ${data.results.length} raw place records`);
 
   let inserted = 0, rejected = 0;
@@ -84,7 +86,14 @@ async function ingestRefuges() {
 
   console.log(`Refuge report: ${inserted} inserted, ${rejected} rejected (not a refuge category or bad data)`);
   console.log('Rejection reasons sample:', JSON.stringify(rejectionLog.slice(0, 3), null, 2));
+  return { inserted, rejected };
 }
 
-// ingestReadings().catch(console.error);
-ingestRefuges().catch(console.error);
+if (require.main === module) {
+  ingestRefuges().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { cleanRefugeRecord, ingestRefuges };

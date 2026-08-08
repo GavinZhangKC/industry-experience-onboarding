@@ -5,36 +5,65 @@ Description: Sensory-Aware Route Planner backend
 Parameters:
   DbClusterArn:
     Type: String
-    Default: arn:aws:rds:ap-southeast-2:837873138727:cluster:database-1
   DbSecretArn:
     Type: String
-    Default: arn:aws:secretsmanager:ap-southeast-2:837873138727:secret:routeplanner-db-secret-hpSdDs
+  DbName:
+    Type: String
+    Default: postgres
+  MapsProvider:
+    Type: String
+    Default: mock
+    AllowedValues: [mock, google]
+  GoogleMapsApiKey:
+    Type: String
+    Default: ''
+    NoEcho: true
+  AllowedOrigin:
+    Type: String
+    Default: http://localhost:5173
 
 Resources:
   RoutePlannerFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: lambda.handler
-      Runtime: nodejs20.x
+      Handler: lambda_handlers.handler.handler
+      Runtime: python3.13
       Timeout: 15
       MemorySize: 256
-      CodeUri: ./
+      CodeUri: backend/
       FunctionUrlConfig:
         AuthType: NONE
         Cors:
-          AllowOrigins: ["*"]
+          AllowOrigins:
+            - !Ref AllowedOrigin
+          AllowMethods:
+            - GET
+            - POST
+          AllowHeaders:
+            - Content-Type
+            - X-Request-ID
+          ExposeHeaders:
+            - X-Request-ID
       Environment:
         Variables:
+          DATA_BACKEND: aurora
           DB_CLUSTER_ARN: !Ref DbClusterArn
           DB_SECRET_ARN: !Ref DbSecretArn
+          DB_NAME: !Ref DbName
+          MAPS_PROVIDER: !Ref MapsProvider
+          GOOGLE_MAPS_API_KEY: !Ref GoogleMapsApiKey
+          ALLOWED_ORIGINS: !Ref AllowedOrigin
       Policies:
         - Statement:
             - Effect: Allow
               Action:
                 - rds-data:ExecuteStatement
                 - rds-data:BatchExecuteStatement
+              Resource: !Ref DbClusterArn
+            - Effect: Allow
+              Action:
                 - secretsmanager:GetSecretValue
-              Resource: '*'
+              Resource: !Ref DbSecretArn
 
 Outputs:
   FunctionUrl:

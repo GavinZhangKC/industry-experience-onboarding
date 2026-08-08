@@ -1,7 +1,7 @@
 # Sensory-Aware Route Planner — Backend
 
-FastAPI backend covering BE-F1 to BE-F5. Runs locally with no AWS account, no
-Google key and no database.
+FastAPI backend covering BE-F1 to BE-F5. It runs locally with no AWS account,
+Google key, or database, and uses the same services when deployed to Lambda.
 
 ## Quick start
 
@@ -59,7 +59,7 @@ app/
     scoring_service.py   BE-F2
     refuge_service.py    BE-F3
   clients/           External providers (mock + Google)
-  lib/               geo.py (pure maths), data_store.py (BE-F4)
+  lib/               geo.py and interchangeable JSON/Aurora data stores
   middleware/        Rate limiting, request ids (BE-F5)
 data/                Seed datasets — see data/README.md
 tests/               pytest
@@ -99,6 +99,43 @@ No handler contains route generation, sensory scoring, distance calculations,
 or data access logic. Configuration continues to come from environment
 variables through `app.config.get_settings()`.
 
+## Reference data: local JSON or Aurora
+
+The service layer consumes one storage-neutral contract. Local development
+uses the checked-in JSON datasets by default:
+
+```text
+DATA_BACKEND=json
+```
+
+For AWS, set `DATA_BACKEND=aurora` and provide `AWS_REGION`,
+`DB_CLUSTER_ARN`, `DB_SECRET_ARN`, and `DB_NAME`. The Aurora adapter is
+read-only and uses the RDS Data API; F1/F2 and F3 require no business-logic
+changes when switching backends. Credentials and ARNs are never hard-coded.
+
+The root-level Node scripts are F4 ingestion utilities only. They populate the
+same Aurora schema and are not a second HTTP backend:
+
+```bash
+npm run ingest:pedestrian
+npm run ingest:refuges
+```
+
+## AWS deployment
+
+The root `template.yaml` packages `backend/` as a Python Lambda and exposes the
+shared handler through a Lambda Function URL. Supply the existing Aurora ARNs
+as deployment parameters rather than adding them to source control:
+
+```bash
+sam build
+sam deploy --guided
+```
+
+During the guided deployment, provide `DbClusterArn`, `DbSecretArn`,
+`DbName`, and the deployed frontend origin. Keep `MapsProvider=mock` until the
+separate Google Maps integration is ready.
+
 ## Security notes (BE-F5)
 
 | Control | Where | Status |
@@ -110,7 +147,7 @@ variables through `app.config.get_settings()`.
 | Rate limiting | `middleware/rate_limit.py` | Done, see caveat below |
 | Upstream + data error handling | `errors.py`, `clients/`, `lib/data_store.py` | Done |
 | Consistent error envelope | `main.py` | Done |
-| Deploy | — | Not started |
+| Lambda Function URL adapter | `lambda_handlers/`, `template.yaml` | Implemented; cloud deployment still requires AWS parameters |
 
 Every error returns the same shape, so the frontend switches on `error.code`
 and never parses message text:
@@ -162,17 +199,16 @@ python3 -m pytest tests -q
 always derived from the same findings — that is US1.1 acceptance criterion 4
 enforced in code rather than by convention.
 
-## Not built yet
+## Still to complete
 
-- Persistence (BE-F4 uses JSON files by design for the MVP)
-- **Real City of Melbourne open-data ingest for `quiet_spaces.json` (AC6).**
-  `data/quiet_spaces.json` is a hand-seeded placeholder file, not a live pull
-  from the open dataset — AC6 ("refuge locations are pulled live from the open
-  dataset, not hard-coded") is **not satisfied** by the current implementation.
-  Satisfying it needs a `scripts/ingest_quiet_spaces.py` that fetches and maps
-  the City of Melbourne open space / public facility datasets on a schedule,
-  not per-request. See `data/README.md` for the same gap on `busy_areas.json`.
-- Live "quiet now" status (US2.2) — see the TODO on `QuietSpace.description`
-  in `app/schemas.py`
-- Authentication (no user accounts in this iteration)
-- Deployment config
+- Deploy the SAM stack with the team's Aurora ARNs and frontend origin.
+- Turn the Node ingestion scripts into scheduled/operated AWS jobs if automatic
+  refresh is required; today they are manually invoked utilities.
+- Add pagination and idempotent writes before using ingestion repeatedly at
+  production scale (the current source requests are limited to 100 records).
+- Replace the hand-seeded JSON data before treating JSON mode as production
+  data; it remains suitable for the current Vercel demo deployment.
+- Implement a real live "quiet now" signal for US2.2; the current description
+  field is static reference information.
+- Complete and enable the separate Google Maps provider configuration.
+- Add authentication only if the product introduces user accounts.

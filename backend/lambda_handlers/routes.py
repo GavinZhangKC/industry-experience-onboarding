@@ -9,7 +9,7 @@ from pydantic import ValidationError
 from app.clients.maps_client import get_maps_client
 from app.config import get_settings
 from app.errors import AppError
-from app.lib.data_store import get_data_store
+from app.lib.data_store import get_configured_data_store
 from app.schemas import RouteRequest
 from app.services.route_service import plan_routes
 from lambda_handlers.common import (
@@ -59,7 +59,7 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
             plan_routes(
                 request,
                 maps_client=get_maps_client(settings),
-                store=get_data_store(settings.data_dir),
+                store=get_configured_data_store(settings),
                 settings=settings,
             )
         )

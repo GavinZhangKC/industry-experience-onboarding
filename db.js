@@ -1,12 +1,18 @@
 const { RDSDataClient, ExecuteStatementCommand } = require('@aws-sdk/client-rds-data');
 
-const client = new RDSDataClient({ region: 'ap-southeast-2' });
-const resourceArn = 'arn:aws:rds:ap-southeast-2:837873138727:cluster:database-1';
-const secretArn = 'arn:aws:secretsmanager:ap-southeast-2:837873138727:secret:routeplanner-db-secret-hpSdDs';
+const region = process.env.AWS_REGION || 'ap-southeast-2';
+const client = new RDSDataClient({ region });
 
 async function query(sql, parameters = [], retries = 3) {
+  const resourceArn = process.env.DB_CLUSTER_ARN;
+  const secretArn = process.env.DB_SECRET_ARN;
+  const database = process.env.DB_NAME || 'postgres';
+  if (!resourceArn || !secretArn) {
+    throw new Error('DB_CLUSTER_ARN and DB_SECRET_ARN must be configured');
+  }
+
   const command = new ExecuteStatementCommand({
-    resourceArn, secretArn, database: 'postgres', sql, parameters
+    resourceArn, secretArn, database, sql, parameters
   });
   try {
     return await client.send(command);

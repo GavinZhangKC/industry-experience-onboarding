@@ -1,20 +1,33 @@
-"""BE-F4: load and validate the prepared reference datasets.
+"""Reference-data contract and local JSON implementation.
 
-Deliberately file-backed for the MVP. Every record has the same four required
-fields, so swapping this for Supabase or Postgres later means rewriting one
-class and nothing else.
+Services depend on ``ReferenceDataStore`` rather than a storage technology.
+Local development uses JSON; AWS can select the Aurora adapter with settings.
 """
 
 import json
 import logging
 from functools import lru_cache
 from pathlib import Path
+from typing import TYPE_CHECKING, Protocol
 
 from app.errors import DataUnavailable
+
+if TYPE_CHECKING:
+    from app.config import Settings
 
 logger = logging.getLogger(__name__)
 
 REQUIRED_FIELDS = ("id", "name", "type", "lat", "lng")
+
+
+class ReferenceDataStore(Protocol):
+    """The read contract consumed by F1/F2 and F3 services."""
+
+    @property
+    def busy_areas(self) -> list[dict]: ...
+
+    @property
+    def quiet_spaces(self) -> list[dict]: ...
 
 
 def _load(path: Path, extra_required: tuple[str, ...] = ()) -> list[dict]:
@@ -66,3 +79,17 @@ class DataStore:
 @lru_cache
 def get_data_store(data_dir: str = "data") -> DataStore:
     return DataStore(data_dir)
+
+
+def get_configured_data_store(settings: "Settings") -> ReferenceDataStore:
+    """Select local JSON or Aurora without leaking that choice into services."""
+    if settings.data_backend == "aurora":
+        from app.lib.aurora_data_store import get_aurora_data_store
+
+        return get_aurora_data_store(
+            region=settings.aws_region,
+            cluster_arn=settings.db_cluster_arn,
+            secret_arn=settings.db_secret_arn,
+            database=settings.db_name,
+        )
+    return get_data_store(settings.data_dir)

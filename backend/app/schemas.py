@@ -89,6 +89,7 @@ class QuietSpaceQuery(BaseModel):
     lng: float = Field(..., ge=-180.0, le=180.0)
     radius_m: int = Field(500, ge=100, le=5000)
     limit: int = Field(5, ge=1, le=20)
+    category: RefugeCategory | None = None
 
 
 class QuietSpaceResponse(BaseModel):

@@ -1,25 +1,5 @@
-const { RDSDataClient, ExecuteStatementCommand } = require('@aws-sdk/client-rds-data');
 const fetch = require('node-fetch');
-
-const client = new RDSDataClient({ region: 'ap-southeast-2' });
-const resourceArn = 'arn:aws:rds:ap-southeast-2:837873138727:cluster:database-1';
-const secretArn = 'arn:aws:secretsmanager:ap-southeast-2:837873138727:secret:routeplanner-db-secret-hpSdDs';
-
-async function query(sql, parameters = [], retries = 3) {
-  const command = new ExecuteStatementCommand({
-    resourceArn, secretArn, database: 'postgres', sql, parameters
-  });
-  try {
-    return await client.send(command);
-  } catch (err) {
-    if (err.name === 'DatabaseResumingException' && retries > 0) {
-      console.log('Database resuming — waiting 10s and retrying...');
-      await new Promise(r => setTimeout(r, 10000));
-      return query(sql, parameters, retries - 1);
-    }
-    throw err;
-  }
-}
+const { query } = require('./db');
 
 function cleanSensorRecord(record) {
   // Note: City of Melbourne's `location_id` field is their sensor's unique ID —
@@ -58,6 +38,9 @@ async function ingestSensors() {
     'https://data.melbourne.vic.gov.au/api/explore/v2.1/catalog/datasets/pedestrian-counting-system-sensor-locations/records?limit=100'
   );
   const data = await res.json();
+  if (!res.ok || !Array.isArray(data.results)) {
+    throw new Error(`Sensor source returned HTTP ${res.status}`);
+  }
   console.log(`Fetched ${data.results.length} raw sensor records from City of Melbourne`);
 
   const seen = new Set();
@@ -102,6 +85,7 @@ async function ingestSensors() {
 
   console.log(`Data quality report: ${inserted} inserted, ${rejected} rejected, ${duplicates} duplicates skipped`);
   if (rejectionLog.length) console.log('Rejected records:', JSON.stringify(rejectionLog, null, 2));
+  return { inserted, rejected, duplicates };
 }
 
 function cleanReadingRecord(record) {
@@ -135,6 +119,9 @@ async function ingestReadings() {
     'https://data.melbourne.vic.gov.au/api/explore/v2.1/catalog/datasets/pedestrian-counting-system-past-hour-counts-per-minute/records?limit=100'
   );
   const data = await res.json();
+  if (!res.ok || !Array.isArray(data.results)) {
+    throw new Error(`Reading source returned HTTP ${res.status}`);
+  }
   console.log(`Fetched ${data.results.length} raw reading records`);
 
   let inserted = 0, rejected = 0, skippedUnknownSensor = 0;
@@ -160,7 +147,11 @@ async function ingestReadings() {
       );
       inserted++;
     } catch (err) {
-      skippedUnknownSensor++;
+      if (err.name === 'BadRequestException' && /foreign key/i.test(err.message)) {
+        skippedUnknownSensor++;
+        continue;
+      }
+      throw err;
     }
   }
 
@@ -179,8 +170,26 @@ async function ingestReadings() {
     WHERE pr.sensor_id = sub.sensor_id;
   `);
   console.log('Rolling averages recomputed');
+  return { inserted, rejected, skippedUnknownSensor };
 }
 
-// ingestSensors().catch(console.error);
-ingestReadings().catch(console.error);
+async function ingestPedestrianData() {
+  const sensors = await ingestSensors();
+  const readings = await ingestReadings();
+  return { sensors, readings };
+}
 
+if (require.main === module) {
+  ingestPedestrianData().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = {
+  cleanSensorRecord,
+  cleanReadingRecord,
+  ingestSensors,
+  ingestReadings,
+  ingestPedestrianData
+};
