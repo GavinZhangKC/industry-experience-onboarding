@@ -82,6 +82,15 @@ class QuietSpace(BaseModel):
     description: str
 
 
+class QuietSpaceQuery(BaseModel):
+    """Framework-independent validation for quiet-space URL parameters."""
+
+    lat: float = Field(..., ge=-90.0, le=90.0)
+    lng: float = Field(..., ge=-180.0, le=180.0)
+    radius_m: int = Field(500, ge=100, le=5000)
+    limit: int = Field(5, ge=1, le=20)
+
+
 class QuietSpaceResponse(BaseModel):
     quiet_spaces: list[QuietSpace]
     radius_m: int
