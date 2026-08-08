@@ -73,34 +73,31 @@ built and demoed against it before anyone has a billable Google key. Switch to
 `MAPS_PROVIDER=google` plus `GOOGLE_MAPS_API_KEY` and nothing else changes —
 the response shape is identical.
 
-## Moving to Lambda later
+## Lambda Function URL handlers
 
-No service imports FastAPI. Each takes plain arguments and returns a Pydantic
-model, so a Lambda handler is a wrapper, not a rewrite:
+The AWS adapter layer is separate from both FastAPI and the services. Local
+development continues to use `uvicorn app.main:app`, while a Lambda Function
+URL can use this shared handler entry point:
 
-```python
-# lambda_handlers/routes.py
-import asyncio, json
-from app.clients.maps_client import get_maps_client
-from app.config import get_settings
-from app.lib.data_store import get_data_store
-from app.schemas import RouteRequest
-from app.services.route_service import plan_routes
-
-def handler(event, context):
-    settings = get_settings()
-    request = RouteRequest.model_validate(json.loads(event["body"]))
-    result = asyncio.run(plan_routes(
-        request,
-        maps_client=get_maps_client(settings),
-        store=get_data_store(settings.data_dir),
-        settings=settings,
-    ))
-    return {"statusCode": 200, "body": result.model_dump_json()}
+```text
+lambda_handlers.handler.handler
 ```
 
-The three services map one-to-one onto the three Lambdas in the architecture
-diagram, so the diagram stays accurate while you are still running uvicorn.
+It preserves the existing paths and dispatches them to thin endpoint adapters:
+
+| Method and path | Adapter | Service flow |
+|---|---|---|
+| `POST /api/v1/routes` | `lambda_handlers.routes.handler` | `plan_routes()` → `score_route()` |
+| `GET /api/v1/quiet-spaces` | `lambda_handlers.quiet_spaces.handler` | `find_quiet_spaces()` |
+
+The endpoint adapters can also be configured as separate Lambda entry points
+if the deployment later adds a routing layer in front of multiple Function
+URLs. Shared response, request-id, validation-error, and safe error-envelope
+handling lives in `lambda_handlers/common.py`.
+
+No handler contains route generation, sensory scoring, distance calculations,
+or data access logic. Configuration continues to come from environment
+variables through `app.config.get_settings()`.
 
 ## Security notes (BE-F5)
 
