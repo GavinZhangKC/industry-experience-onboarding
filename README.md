@@ -88,3 +88,13 @@ cd .. && npm ci && npm test
 
 The frontend has no automated test suite yet; verify changes with
 `npm run build` (typecheck) and a manual pass in the browser.
+
+## Deployment targets
+
+- AWS remains supported through `template.yaml` and the handlers under
+  `backend/lambda_handlers/`.
+- Vercel deployment uses two projects from this repository: `frontend` and
+  `backend`. Aurora remains in AWS and is accessed through the RDS Data API.
+
+See [VERCEL_DEPLOYMENT.md](VERCEL_DEPLOYMENT.md) for the project settings,
+environment variables, minimum IAM policy, and verification steps.

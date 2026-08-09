@@ -136,6 +136,13 @@ During the guided deployment, provide `DbClusterArn`, `DbSecretArn`,
 `DbName`, and the deployed frontend origin. Keep `MapsProvider=mock` until the
 separate Google Maps integration is ready.
 
+### Vercel alternative
+
+Vercel imports `backend/main.py` as the FastAPI ASGI application. The existing
+AWS Lambda handlers and SAM template remain available; both adapters use the
+same API routes and services. Deployment settings and the AWS IAM policy are
+documented in the repository's `VERCEL_DEPLOYMENT.md`.
+
 ## Security notes (BE-F5)
 
 | Control | Where | Status |

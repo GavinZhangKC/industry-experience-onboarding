@@ -47,6 +47,7 @@ Resources:
       Environment:
         Variables:
           DATA_BACKEND: aurora
+          AURORA_AWS_REGION: !Ref AWS::Region
           DB_CLUSTER_ARN: !Ref DbClusterArn
           DB_SECRET_ARN: !Ref DbSecretArn
           DB_NAME: !Ref DbName
