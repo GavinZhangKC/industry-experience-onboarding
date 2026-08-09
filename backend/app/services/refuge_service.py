@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 
 from app.clients.maps_client import MapsClient
 from app.config import Settings
-from app.lib.data_store import DataStore
+from app.lib.data_store import ReferenceDataStore
 from app.lib.geo import haversine_m
 from app.schemas import (
     QuietSpace,
@@ -37,7 +37,7 @@ def find_quiet_spaces(
     radius_m: int,
     limit: int,
     category: RefugeCategory | None = None,
-    store: DataStore,
+    store: ReferenceDataStore,
     settings: Settings,
 ) -> QuietSpaceResponse:
     guard_service_area(lat, lng, settings)
@@ -59,7 +59,9 @@ def find_quiet_spaces(
                     lat=space["lat"],
                     lng=space["lng"],
                     distance_m=int(round(distance)),
-                    description=space["description"],
+                    description=space.get(
+                        "description", "A nearby place that may offer a quieter break."
+                    ),
                 )
             )
 
@@ -84,7 +86,7 @@ async def plan_refuge_detour(
     request: RefugeDetourRequest,
     *,
     maps_client: MapsClient,
-    store: DataStore,
+    store: ReferenceDataStore,
     settings: Settings,
 ) -> RefugeDetourResponse:
     """AC5: show the detour to a refuge *and* the way back onto the original

@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from app.clients.maps_client import MapsClient
 from app.config import Settings
 from app.errors import NoRoutesFound, OutOfServiceArea
-from app.lib.data_store import DataStore
+from app.lib.data_store import ReferenceDataStore
 from app.lib.geo import decode_polyline
 from app.schemas import RouteOption, RouteRequest, RouteResponse
 from app.services.scoring_service import score_route
@@ -31,7 +31,7 @@ async def plan_routes(
     request: RouteRequest,
     *,
     maps_client: MapsClient,
-    store: DataStore,
+    store: ReferenceDataStore,
     settings: Settings,
 ) -> RouteResponse:
     guard_service_area(request.origin.lat, request.origin.lng, settings)
