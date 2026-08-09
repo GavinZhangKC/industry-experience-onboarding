@@ -1,0 +1,44 @@
+.card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.card[aria-pressed="true"] {
+  border-color: var(--color-accent);
+  background: var(--color-surface-muted);
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.label {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.metrics {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.explanation {
+  margin: 0;
+}
+
+.selectedTag {
+  font-weight: 700;
+  color: var(--color-accent);
+}
