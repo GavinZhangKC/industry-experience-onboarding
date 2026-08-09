@@ -1,0 +1,17 @@
+[
+  {"id": "ba-flinders-st-station", "name": "Flinders Street Station", "type": "transport_hub", "lat": -37.8183, "lng": 144.9671, "weight": 5},
+  {"id": "ba-southern-cross", "name": "Southern Cross Station", "type": "transport_hub", "lat": -37.8184, "lng": 144.9525, "weight": 5},
+  {"id": "ba-melbourne-central", "name": "Melbourne Central", "type": "transport_hub", "lat": -37.8102, "lng": 144.9628, "weight": 5},
+  {"id": "ba-parliament-station", "name": "Parliament Station", "type": "transport_hub", "lat": -37.8110, "lng": 144.9730, "weight": 4},
+  {"id": "ba-flagstaff-station", "name": "Flagstaff Station", "type": "transport_hub", "lat": -37.8120, "lng": 144.9556, "weight": 4},
+  {"id": "ba-bourke-st-mall", "name": "Bourke Street Mall", "type": "retail_strip", "lat": -37.8136, "lng": 144.9646, "weight": 5},
+  {"id": "ba-federation-square", "name": "Federation Square", "type": "event_space", "lat": -37.8180, "lng": 144.9691, "weight": 4},
+  {"id": "ba-queen-victoria-market", "name": "Queen Victoria Market", "type": "market", "lat": -37.8076, "lng": 144.9568, "weight": 4},
+  {"id": "ba-swanston-lonsdale", "name": "Swanston and Lonsdale intersection", "type": "intersection", "lat": -37.8110, "lng": 144.9648, "weight": 3},
+  {"id": "ba-elizabeth-flinders", "name": "Elizabeth and Flinders intersection", "type": "intersection", "lat": -37.8177, "lng": 144.9650, "weight": 3},
+  {"id": "ba-southbank-promenade", "name": "Southbank Promenade", "type": "pedestrian_strip", "lat": -37.8207, "lng": 144.9631, "weight": 3},
+  {"id": "ba-degraves-st", "name": "Degraves Street", "type": "laneway", "lat": -37.8166, "lng": 144.9660, "weight": 3},
+  {"id": "ba-victoria-st-abbotsford", "name": "Victoria Street shops, Abbotsford", "type": "retail_strip", "lat": -37.8093, "lng": 144.9998, "weight": 3},
+  {"id": "ba-bridge-rd-richmond", "name": "Bridge Road, Richmond", "type": "retail_strip", "lat": -37.8189, "lng": 144.9944, "weight": 3},
+  {"id": "ba-church-st-richmond", "name": "Church Street, Richmond", "type": "arterial_road", "lat": -37.8215, "lng": 144.9928, "weight": 3}
+]

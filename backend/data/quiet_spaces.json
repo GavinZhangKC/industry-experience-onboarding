@@ -1,0 +1,18 @@
+[
+  {"id": "qs-state-library", "name": "State Library Victoria", "type": "library", "lat": -37.8098, "lng": 144.9652, "description": "Grand reading rooms with quiet study spaces."},
+  {"id": "qs-city-library", "name": "City Library, Flinders Lane", "type": "library", "lat": -37.8163, "lng": 144.9670, "description": "Compact inner-city library with quiet reading nooks."},
+  {"id": "qs-library-at-the-dock", "name": "Library at The Dock", "type": "library", "lat": -37.8195, "lng": 144.9410, "description": "Waterfront library with light-filled reading areas."},
+  {"id": "qs-east-melbourne-library", "name": "East Melbourne Library", "type": "library", "lat": -37.8145, "lng": 144.9862, "description": "Small neighbourhood library, usually uncrowded."},
+  {"id": "qs-carlton-gardens", "name": "Carlton Gardens", "type": "park", "lat": -37.8055, "lng": 144.9709, "description": "Grand Victorian-era parkland with tree-lined avenues."},
+  {"id": "qs-flagstaff-gardens", "name": "Flagstaff Gardens", "type": "park", "lat": -37.8113, "lng": 144.9541, "description": "Open lawns and mature trees on the CBD's edge."},
+  {"id": "qs-fitzroy-gardens", "name": "Fitzroy Gardens", "type": "park", "lat": -37.8127, "lng": 144.9797, "description": "Historic gardens with wide, shaded walking paths."},
+  {"id": "qs-treasury-gardens", "name": "Treasury Gardens", "type": "park", "lat": -37.8140, "lng": 144.9737, "description": "Quiet lawns and a lake, close to the CBD."},
+  {"id": "qs-birrarung-marr", "name": "Birrarung Marr", "type": "park", "lat": -37.8188, "lng": 144.9714, "description": "Riverside parkland along the Yarra with open lawns."},
+  {"id": "qs-alexandra-gardens", "name": "Alexandra Gardens", "type": "garden", "lat": -37.8207, "lng": 144.9708, "description": "Riverside gardens with shaded seating areas."},
+  {"id": "qs-queen-victoria-gardens", "name": "Queen Victoria Gardens", "type": "garden", "lat": -37.8235, "lng": 144.9740, "description": "Formal gardens with fountains and open lawns."},
+  {"id": "qs-batman-park", "name": "Batman Park", "type": "park", "lat": -37.8206, "lng": 144.9578, "description": "Riverside green space away from the main foot traffic."},
+  {"id": "qs-abbotsford-convent", "name": "Abbotsford Convent gardens", "type": "garden", "lat": -37.8032, "lng": 145.0031, "description": "Historic convent grounds with quiet courtyards."},
+  {"id": "qs-yarra-riverside-abbotsford", "name": "Yarra riverside reserve, Abbotsford", "type": "park", "lat": -37.8055, "lng": 144.9975, "description": "Riverside reserve with walking paths and open grass."},
+  {"id": "qs-citizens-park-richmond", "name": "Citizens Park, Richmond", "type": "park", "lat": -37.8232, "lng": 144.9967, "description": "Local park with open lawns and mature trees."},
+  {"id": "qs-richmond-library", "name": "Richmond Library", "type": "library", "lat": -37.8199, "lng": 144.9997, "description": "Neighbourhood library with quiet reading spaces."}
+]
