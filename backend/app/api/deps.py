@@ -1,0 +1,19 @@
+"""Shared FastAPI dependencies. The only file that couples HTTP to services."""
+
+from fastapi import Depends
+
+from app.clients.maps_client import MapsClient, get_maps_client
+from app.config import Settings, get_settings
+from app.lib.data_store import DataStore, get_data_store
+
+
+def settings_dep() -> Settings:
+    return get_settings()
+
+
+def store_dep(settings: Settings = Depends(settings_dep)) -> DataStore:
+    return get_data_store(settings.data_dir)
+
+
+def maps_dep(settings: Settings = Depends(settings_dep)) -> MapsClient:
+    return get_maps_client(settings)
