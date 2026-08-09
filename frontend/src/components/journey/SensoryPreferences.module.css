@@ -1,0 +1,114 @@
+.fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+}
+
+.legend {
+  margin-bottom: 16px;
+  padding: 0;
+
+  color: var(--color-text);
+
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.option {
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  cursor: pointer;
+}
+
+.input {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  overflow: hidden;
+
+  opacity: 0;
+}
+
+.track {
+  position: relative;
+
+  width: 44px;
+  height: 28px;
+  flex: 0 0 44px;
+
+  border: 0;
+  border-radius: 999px;
+
+  background: #d9dde3;
+
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+
+  transition: background-color 150ms ease;
+}
+
+.thumb {
+  position: absolute;
+
+  top: 4px;
+  left: 4px;
+
+  width: 20px;
+  height: 20px;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.24),
+    0 1px 2px rgba(0, 0, 0, 0.12);
+
+  transition: transform 150ms ease;
+}
+
+.input:checked + .track {
+  background: #1296f3;
+
+  box-shadow: none;
+}
+
+/* move to right */
+
+.input:checked + .track .thumb {
+  transform: translateX(16px);
+}
+
+/* focus when tabbed */
+
+.input:focus-visible + .track {
+  outline: 3px solid rgba(18, 150, 243, 0.35);
+  outline-offset: 3px;
+}
+
+.option:hover .track {
+  box-shadow: inset 0 0 0 2px rgba(18, 150, 243, 0.18);
+}
+
+.input:checked + .track:hover {
+  background: #0789e4;
+}
+
+.label {
+  color: var(--color-text);
+
+  font-size: 1rem;
+  line-height: 1.4;
+}

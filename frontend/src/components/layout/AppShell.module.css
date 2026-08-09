@@ -5,54 +5,221 @@
 }
 
 .header {
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-surface);
+  flex: 0 0 auto;
+  min-height: 88px;
+  padding: 14px 20px;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-left: 24px;
+
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 8px 28px rgba(25, 31, 45, 0.14);
+  backdrop-filter: blur(12px);
+}
+
+.brandMark {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #ffffff;
+  background: #5367ff;
+  border-radius: 13px;
+  box-shadow: 0 6px 14px rgba(83, 103, 255, 0.25);
+}
+
+.brandMark svg {
+  width: 34px;
+  height: 34px;
+}
+
+.brandText {
+  min-width: 0;
 }
 
 .headerTitle {
   margin: 0;
-  font-size: 1.15rem;
+  color: #172033;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
 }
 
 .headerSubtitle {
-  margin: 0;
-  color: var(--color-text-muted);
-  font-size: 0.85rem;
+  margin: 4px 0 0;
+  color: #667085;
+  font-size: 0.92rem;
+  line-height: 1.4;
 }
 
 .body {
+  position: relative;
   flex: 1;
-  display: flex;
   min-height: 0;
+  overflow: hidden;
 }
 
 .mapArea {
-  flex: 1;
-  min-width: 0;
-  position: relative;
+  position: absolute;
+  inset: 0;
+}
+
+.mapArea :global(.leaflet-top.leaflet-right) {
+  top: 132px;
+  right: 16px;
 }
 
 .sidePanel {
-  width: 380px;
-  max-width: 100%;
+  position: absolute;
+  z-index: 900;
+
+  top: 16px;
+  bottom: 16px;
+  left: 16px;
+
+  width: 420px;
+  max-width: calc(100% - 32px);
+
+  padding-top: 64px;
   overflow-y: auto;
-  border-left: 1px solid var(--color-border);
-  background: var(--color-bg);
+
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+
+  background: var(--color-surface);
+
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
 }
 
 @media (max-width: 760px) {
-  .body {
-    flex-direction: column;
-  }
-
-  .mapArea {
-    height: 45vh;
-  }
-
   .sidePanel {
-    width: 100%;
-    border-left: none;
-    border-top: 1px solid var(--color-border);
+    position: absolute;
+    z-index: 800;
+    inset: 0;
+
+    overflow-y: auto;
+    padding-top: 64px;
+
+    border: 1px solid rgba(255, 255, 255, 0.82);
+    border-radius: 22px;
+
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: 0 20px 48px rgba(25, 31, 45, 0.2);
+    backdrop-filter: blur(14px);
+
+    pointer-events: auto;
+    transform-origin: top left;
   }
+
+  .menuButton {
+    top: 24px;
+    left: 24px;
+
+    width: 44px;
+    height: 44px;
+  }
+}
+
+.menuButton {
+  position: absolute;
+  z-index: 950;
+
+  top: 16px;
+  left: 18px;
+
+  width: 48px;
+  height: 48px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  border: 1px solid rgba(220, 224, 232, 0.95);
+  border-radius: 50%;
+
+  background: #ffffff;
+  color: #202633;
+  box-shadow: 0 6px 18px rgba(25, 31, 45, 0.18);
+
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+
+  pointer-events: auto;
+}
+
+.menuButton:hover {
+  background: #f6f7fa;
+}
+
+.sidePanelOpen {
+  display: block;
+}
+
+.sidePanelClosed {
+  display: none;
+}
+
+.menuButtonClosed {
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+
+  background: var(--color-surface);
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.menuButtonOpen {
+  border: 1px solid transparent;
+  border-radius: 8px;
+
+  background: transparent;
+
+  box-shadow: none;
+}
+
+.menuButtonClosed:hover {
+  background: var(--color-surface-muted);
+}
+
+.menuButtonOpen:hover {
+  background: var(--color-surface-muted);
+}
+
+.floatingLayer {
+  --panel-indent: 24px;
+
+  position: absolute;
+  z-index: 1000;
+  top: 16px;
+  right: 24px;
+  bottom: 16px;
+  left: 24px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  pointer-events: none;
+}
+
+.panelArea {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+
+  width: min(620px, calc(100vw - 48px));
+
+  pointer-events: auto;
 }

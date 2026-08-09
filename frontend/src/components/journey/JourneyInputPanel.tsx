@@ -4,6 +4,7 @@ import { ErrorBanner } from "../common/ErrorBanner";
 import { LoadingState } from "../common/LoadingState";
 import { LocationSelect } from "./LocationSelect";
 import styles from "./JourneyInputPanel.module.css";
+import { SensoryPreferences } from "./SensoryPreferences";
 
 export type PickingField = "origin" | "destination" | null;
 
@@ -30,7 +31,6 @@ export function JourneyInputPanel({
   pickingField,
   onSelectLandmark,
   onTogglePicking,
-  onClearField,
   onClearAll,
   onSearch,
   loading,
@@ -40,37 +40,47 @@ export function JourneyInputPanel({
 
   return (
     <section className={styles.panel} aria-labelledby="journey-input-heading">
-      <h2 id="journey-input-heading" className={styles.title}>
+      <h2 id="journey-input-heading" className="visually-hidden">
         Plan a calm route
       </h2>
-      <LocationSelect
-        label="Origin"
-        value={origin}
-        selectedLandmarkId={originLandmarkId}
-        onSelectLandmark={(id) => onSelectLandmark("origin", id)}
-        isPicking={pickingField === "origin"}
-        onTogglePicking={() => onTogglePicking("origin")}
-        onClear={() => onClearField("origin")}
-      />
-      <LocationSelect
-        label="Destination"
-        value={destination}
-        selectedLandmarkId={destinationLandmarkId}
-        onSelectLandmark={(id) => onSelectLandmark("destination", id)}
-        isPicking={pickingField === "destination"}
-        onTogglePicking={() => onTogglePicking("destination")}
-        onClear={() => onClearField("destination")}
-      />
+      <div className={styles.locationGroup}>
+        <LocationSelect
+          label="From"
+          kind="origin"
+          value={origin}
+          selectedLandmarkId={originLandmarkId}
+          onSelectLandmark={(id) => onSelectLandmark("origin", id)}
+          isPicking={pickingField === "origin"}
+          onTogglePicking={() => onTogglePicking("origin")}
+        />
+
+        <div className={styles.directionArrow} aria-hidden="true">
+          ↓
+        </div>
+
+        <LocationSelect
+          label="To"
+          kind="destination"
+          value={destination}
+          selectedLandmarkId={destinationLandmarkId}
+          onSelectLandmark={(id) => onSelectLandmark("destination", id)}
+          isPicking={pickingField === "destination"}
+          onTogglePicking={() => onTogglePicking("destination")}
+        />
+      </div>
       <div className={styles.actions}>
-        <Button type="button" onClick={onSearch} disabled={!canSearch}>
-          {loading ? "Searching…" : "Search routes"}
-        </Button>
         <Button type="button" variant="secondary" onClick={onClearAll}>
-          Clear all
+          Reset
+        </Button>
+
+        <Button type="button" onClick={onSearch} disabled={!canSearch}>
+          {loading ? "Finding routes…" : "Find routes"}
         </Button>
       </div>
       {loading && <LoadingState label="Looking for calm routes…" />}
       {error && <ErrorBanner message={error.message} />}
+
+      <SensoryPreferences />
     </section>
   );
 }

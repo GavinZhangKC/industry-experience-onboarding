@@ -165,20 +165,27 @@ function App() {
       onNewSearch={handleNewSearch}
     />
   ) : (
-    <JourneyInputPanel
-      origin={origin}
-      destination={destination}
-      originLandmarkId={originLandmarkId}
-      destinationLandmarkId={destinationLandmarkId}
-      pickingField={pickingField}
-      onSelectLandmark={handleSelectLandmark}
-      onTogglePicking={handleTogglePicking}
-      onClearField={handleClearField}
-      onClearAll={handleClearAll}
-      onSearch={handleSearchRoutes}
-      loading={routes.loading}
-      error={routes.error}
-    />
+    <>
+      <JourneyInputPanel
+        origin={origin}
+        destination={destination}
+        originLandmarkId={originLandmarkId}
+        destinationLandmarkId={destinationLandmarkId}
+        pickingField={pickingField}
+        onSelectLandmark={handleSelectLandmark}
+        onTogglePicking={handleTogglePicking}
+        onClearField={handleClearField}
+        onClearAll={handleClearAll}
+        onSearch={handleSearchRoutes}
+        loading={routes.loading}
+        error={routes.error}
+      />
+
+      <FindQuietSpaceButton
+        mapCenter={mapCenter}
+        onFind={handleFindQuietSpace}
+      />
+    </>
   );
 
   return (
@@ -201,7 +208,6 @@ function App() {
         </MapView>
       }
       sidePanel={sidePanel}
-      quietSpaceBar={<FindQuietSpaceButton mapCenter={mapCenter} onFind={handleFindQuietSpace} />}
     />
   );
 }

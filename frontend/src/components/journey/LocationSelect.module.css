@@ -1,62 +1,148 @@
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
+.fieldRow {
+  position: relative;
+  z-index: 1;
+
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
 }
 
-.label {
-  font-weight: 600;
+.originMarker,
+.destinationMarker {
+  justify-self: center;
+  margin-top: 16px;
+}
+
+/* 蓝色起点 */
+
+.originMarker {
+  width: 18px;
+  height: 18px;
+
+  border: 4px solid #d8dcff;
+  border-radius: 50%;
+
+  background: #5264ff;
+
+  box-shadow: 0 0 0 2px var(--color-surface);
+}
+
+/* 红色终点大头针 */
+
+.destinationMarker {
+  position: relative;
+
+  width: 20px;
+  height: 20px;
+
+  border: 3px solid #ff4b55;
+  border-radius: 50% 50% 50% 0;
+
+  background: var(--color-surface);
+
+  transform: rotate(-45deg);
+
+  box-shadow: 0 0 0 2px var(--color-surface);
+}
+
+.destinationMarker::after {
+  content: "";
+
+  position: absolute;
+  top: 4px;
+  left: 4px;
+
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #ff4b55;
+}
+
+.field {
+  min-width: 0;
+}
+
+.inputShell {
+  min-height: 54px;
+
+  display: flex;
+  align-items: stretch;
+
+  overflow: hidden;
+
+  border: 1px solid #d5d7dc;
+  border-radius: 10px;
+
+  background: var(--color-surface);
+
+  box-shadow: 0 4px 12px rgba(25, 31, 45, 0.16);
+}
+
+.inputShell:focus-within {
+  border-color: #5264ff;
+
+  box-shadow:
+    0 0 0 3px rgba(82, 100, 255, 0.16),
+    0 4px 12px rgba(25, 31, 45, 0.14);
 }
 
 .select {
-  padding: var(--space-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  min-width: 0;
+  flex: 1;
+
+  padding: 0 12px 0 16px;
+
+  border: 0;
+
   background: var(--color-surface);
   color: var(--color-text);
-}
-
-.row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  flex-wrap: wrap;
 }
 
 .pickButton {
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-accent);
+  width: 54px;
+  flex: 0 0 54px;
+
+  padding: 0;
+
+  border: 0;
+  border-left: 1px solid #d5d7dc;
+
   background: var(--color-surface);
-  color: var(--color-accent);
-  font-size: 0.85rem;
-  font-weight: 600;
+  color: var(--color-text);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pickButton:hover {
+  background: var(--color-surface-muted);
 }
 
 .pickButtonActive {
-  background: var(--color-accent);
-  color: var(--color-accent-contrast);
+  background: #5264ff;
+  color: #ffffff;
+}
+
+.pickButtonActive:hover {
+  background: #4557e8;
 }
 
 .hint {
+  margin: 8px 0 0;
+
+  color: #4557e8;
+
   font-size: 0.85rem;
-  color: var(--color-text-muted);
 }
 
 .customPoint {
-  font-size: 0.9rem;
-  color: var(--color-text);
-}
+  margin: 8px 0 0;
 
-.clearButton {
-  font-size: 0.85rem;
-  text-decoration: underline;
-  background: none;
-  border: none;
-  color: var(--color-accent);
-  padding: var(--space-1);
+  color: var(--color-text-muted);
+
+  font-size: 0.82rem;
 }

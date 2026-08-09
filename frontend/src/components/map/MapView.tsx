@@ -1,4 +1,10 @@
-import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  ZoomControl,
+  useMap,
+  useMapEvents,
+} from "react-leaflet";
 import type { LatLngTuple } from "leaflet";
 import { type ReactNode, useEffect } from "react";
 import type { Coordinate } from "../../api/types";
@@ -88,6 +94,7 @@ export function MapView({ children, onMapClick, onCenterChange, panTarget, panTa
       zoom={15}
       minZoom={13}
       maxZoom={18}
+      zoomControl={false}
       style={{ height: "100%", width: "100%" }}
       keyboard
     >
@@ -95,6 +102,7 @@ export function MapView({ children, onMapClick, onCenterChange, panTarget, panTa
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+      <ZoomControl position="topright" />
       <AccessibleContainer />
       <ResizeHandler />
       <ClickHandler onMapClick={onMapClick} onCenterChange={onCenterChange} />
