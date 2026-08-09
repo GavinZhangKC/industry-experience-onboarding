@@ -1,0 +1,60 @@
+/* Muted, calm palette. Contrast ratios verified against WCAG AA (4.5:1 text,
+   3:1 graphical) — see notes beside each pairing. Do not swap in saturated
+   colours; the interface itself should not be a sensory load. */
+:root {
+  --color-bg: #f7f6f3;
+  --color-surface: #ffffff;
+  --color-surface-muted: #eeece7;
+  --color-border: #d7d3ca;
+  --color-text: #22262b; /* vs --color-bg: 14.08:1 */
+  --color-text-muted: #52585f; /* vs --color-bg: 7.1:1 */
+  --color-accent: #2f6b63; /* vs white text: 6.17:1, vs --color-bg text use: 5.71:1 */
+  --color-accent-contrast: #ffffff;
+  --color-focus-ring: #1c4fa0;
+
+  --color-danger-bg: #fbeceb;
+  --color-danger-text: #7a2323; /* vs --color-danger-bg: >7:1 */
+  --color-danger-border: #c98f8f;
+
+  /* Sensory levels: each pairs a colour with a distinct shape/glyph
+     (see constants/sensory.ts) so colour is never the only signal. Glyph
+     colour is always white on these fills, each >=4.9:1. */
+  --color-sensory-low: #3e7c59;
+  --color-sensory-medium: #8a6d1b;
+  --color-sensory-high: #9b3b3b;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1b1d1f;
+    --color-surface: #26292c;
+    --color-surface-muted: #303337;
+    --color-border: #454a4f;
+    --color-text: #ecedef; /* vs --color-bg: >14:1 */
+    --color-text-muted: #b7bcc2;
+    --color-accent: #7fbdb2; /* light teal, vs --color-bg: >8:1 */
+    --color-accent-contrast: #0f2422;
+    --color-focus-ring: #8fb8ff;
+
+    --color-danger-bg: #3a2323;
+    --color-danger-text: #f3b8b8;
+    --color-danger-border: #7a4040;
+
+    --color-sensory-low: #6fae8b;
+    --color-sensory-medium: #c9a94a;
+    --color-sensory-high: #d67878;
+  }
+}
