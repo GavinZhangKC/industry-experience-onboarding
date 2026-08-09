@@ -1,0 +1,15 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "rds-data:ExecuteStatement",
+      "Resource": "arn:aws:rds:ap-southeast-2:837873138727:cluster:database-1"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "secretsmanager:GetSecretValue",
+      "Resource": "arn:aws:secretsmanager:ap-southeast-2:837873138727:secret:routeplanner-db-secret-hpSdDs"
+    }
+  ]
+}
