@@ -27,11 +27,15 @@ def decode_polyline(encoded: str) -> list[Point]:
             shift = result = 0
             while True:
                 if index >= length:
-                    return points
+                    raise ValueError("encoded polyline ended mid-coordinate")
                 byte = ord(encoded[index]) - 63
                 index += 1
+                if byte < 0 or byte > 0x3F:
+                    raise ValueError("encoded polyline contains an invalid character")
                 result |= (byte & 0x1F) << shift
                 shift += 5
+                if shift > 60:
+                    raise ValueError("encoded polyline coordinate is too large")
                 if byte < 0x20:
                     break
             delta = ~(result >> 1) if result & 1 else (result >> 1)

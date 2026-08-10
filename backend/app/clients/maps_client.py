@@ -13,7 +13,7 @@ import httpx
 
 from app.config import Settings
 from app.errors import NoRoutesFound, UpstreamError
-from app.lib.geo import encode_polyline, haversine_m
+from app.lib.geo import decode_polyline, encode_polyline, haversine_m
 
 logger = logging.getLogger(__name__)
 
@@ -116,21 +116,54 @@ class GoogleMapsClient:
             logger.warning("Mapping provider returned %s", response.status_code)
             raise UpstreamError()
 
-        raw = response.json().get("routes", [])
+        try:
+            payload = response.json()
+        except ValueError as exc:
+            logger.warning("Mapping provider returned invalid JSON")
+            raise UpstreamError() from exc
+
+        raw = payload.get("routes", []) if isinstance(payload, dict) else []
         if not raw:
             raise NoRoutesFound()
 
-        routes = []
-        for route in raw[:alternatives]:
-            duration = route.get("duration", "0s")
-            routes.append(
-                RawRoute(
-                    distance_m=int(route.get("distanceMeters", 0)),
-                    duration_s=int(float(str(duration).rstrip("s") or 0)),
-                    polyline=route.get("polyline", {}).get("encodedPolyline", ""),
-                )
-            )
-        return routes
+        try:
+            return [_parse_google_route(route) for route in raw[:alternatives]]
+        except (KeyError, TypeError, ValueError) as exc:
+            logger.warning("Mapping provider returned an invalid route: %s", exc)
+            raise UpstreamError() from exc
+
+
+def _parse_google_route(route: object) -> RawRoute:
+    """Validate the small Google response surface the service relies on."""
+    if not isinstance(route, dict):
+        raise ValueError("route must be an object")
+
+    distance = route.get("distanceMeters")
+    if isinstance(distance, bool) or not isinstance(distance, int) or distance <= 0:
+        raise ValueError("route distance must be a positive integer")
+
+    duration = route.get("duration")
+    if not isinstance(duration, str) or not duration.endswith("s"):
+        raise ValueError("route duration must be seconds")
+    duration_value = float(duration[:-1])
+    duration_s = int(duration_value)
+    if not math.isfinite(duration_value) or duration_s <= 0:
+        raise ValueError("route duration must be positive")
+
+    polyline = route.get("polyline", {}).get("encodedPolyline")
+    if not isinstance(polyline, str):
+        raise ValueError("route polyline must contain at least two points")
+    points = decode_polyline(polyline)
+    if len(points) < 2 or any(
+        not (-90 <= lat <= 90 and -180 <= lng <= 180) for lat, lng in points
+    ):
+        raise ValueError("route polyline must contain valid coordinates")
+
+    return RawRoute(
+        distance_m=distance,
+        duration_s=duration_s,
+        polyline=polyline,
+    )
 
 
 def get_maps_client(settings: Settings) -> MapsClient:

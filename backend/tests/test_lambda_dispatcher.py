@@ -23,6 +23,13 @@ def test_dispatcher_sends_routes_path_to_route_handler(monkeypatch):
     assert dispatcher.handler(_event("/api/v1/routes"), None) is expected
 
 
+def test_dispatcher_sends_health_path_to_health_handler(monkeypatch):
+    expected = {"statusCode": 200, "body": "health"}
+    monkeypatch.setattr(dispatcher.health, "handler", lambda event, context: expected)
+
+    assert dispatcher.handler(_event("/health"), None) is expected
+
+
 def test_dispatcher_sends_quiet_path_to_quiet_handler(monkeypatch):
     expected = {"statusCode": 200, "body": "quiet"}
     monkeypatch.setattr(
@@ -30,6 +37,15 @@ def test_dispatcher_sends_quiet_path_to_quiet_handler(monkeypatch):
     )
 
     assert dispatcher.handler(_event("/api/v1/quiet-spaces"), None) is expected
+
+
+def test_dispatcher_sends_refuge_detour_path_to_handler(monkeypatch):
+    expected = {"statusCode": 200, "body": "refuge-detour"}
+    monkeypatch.setattr(
+        dispatcher.refuge_detour, "handler", lambda event, context: expected
+    )
+
+    assert dispatcher.handler(_event("/api/v1/refuge-detour"), None) is expected
 
 
 def test_dispatcher_returns_enveloped_404_for_unknown_path():
