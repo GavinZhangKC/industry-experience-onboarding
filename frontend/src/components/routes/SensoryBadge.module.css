@@ -1,23 +1,51 @@
 .badge {
+  box-sizing: border-box;
+  width: 100%;
+
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface-muted);
-  font-weight: 600;
+  gap: 12px;
+
+  padding: 7px 12px;
+
+  color: #24364b;
+  background: #f5f7fa;
+
+  border: 1px solid rgba(23, 79, 158, 0.12);
+  border-radius: 14px;
+
+  font-family: "Fira Sans", Arial, sans-serif;
   font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .glyph {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  color: #ffffff;
-  font-size: 0.75rem;
+
+  border-radius: 9px;
+
+  font-size: 0.7rem;
+  font-weight: 700;
   line-height: 1;
+}
+
+.low {
+  color: #3e7c59;
+  background: #e3f3e9;
+}
+
+.medium {
+  color: #8a6d1b;
+  background: #faefcf;
+}
+
+.high {
+  color: #9b3b3b;
+  background: #f8dfdf;
 }

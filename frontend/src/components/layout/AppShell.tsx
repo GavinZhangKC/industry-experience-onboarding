@@ -1,29 +1,166 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { InformationPanel } from "./InformationPanel";
 import styles from "./AppShell.module.css";
 
 interface AppShellProps {
   map: ReactNode;
+  mapOverlay?: ReactNode;
   sidePanel: ReactNode;
-  quietSpaceBar: ReactNode;
 }
 
-export function AppShell({ map, sidePanel, quietSpaceBar }: AppShellProps) {
+function BrandMark() {
+  return (
+    <div className={styles.brandMark} aria-hidden="true">
+      <svg viewBox="0 0 40 40">
+        <path
+          d="M11 29C11 22 16 23 16 17C16 13.5 18.5 11 22 11C26 11 29 14 29 18C29 24 23 25 23 30"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+
+        <circle
+          cx="11"
+          cy="29"
+          r="3"
+          fill="currentColor"
+        />
+
+        <circle
+          cx="29"
+          cy="18"
+          r="3"
+          fill="currentColor"
+        />
+      </svg>
+    </div>
+  );
+}
+
+export function AppShell({
+  map,
+  mapOverlay,
+  sidePanel,
+}: AppShellProps) {
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
+
+  function handleTogglePlanner() {
+    setInfoOpen(false);
+    setPanelOpen((current) => !current);
+  }
+
+  function handleOpenInformation() {
+    setPanelOpen(false);
+    setInfoOpen(true);
+  }
+
   return (
     <div className={styles.shell}>
-      <a href="#side-panel" className="skip-link">
+      <a
+        href="#side-panel"
+        className="skip-link"
+        onClick={() => {
+          setInfoOpen(false);
+          setPanelOpen(true);
+        }}
+      >
         Skip to controls
       </a>
-      <header className={styles.header}>
-        <h1 className={styles.headerTitle}>Sensory-Aware Route Planner</h1>
-        <p className={styles.headerSubtitle}>Calm walking routes and quiet spaces around Melbourne's CBD</p>
-      </header>
+
       <div className={styles.body}>
-        <div className={styles.mapArea}>{map}</div>
-        <div className={styles.sidePanel} id="side-panel" tabIndex={-1}>
-          {sidePanel}
+        <div className={styles.mapArea}>
+          {map}
+          {mapOverlay && (
+            <div className={styles.mapOverlay}>
+              {mapOverlay}
+            </div>
+          )}
         </div>
       </div>
-      {quietSpaceBar}
+
+      <div className={styles.floatingLayer}>
+        <header className={styles.header}>
+          <BrandMark />
+
+          <div className={styles.brandText}>
+            <h1 className={styles.headerTitle}>
+              Sensory-Aware Route Planner
+            </h1>
+
+            <p className={styles.headerSubtitle}>
+              Calm walking routes and quiet spaces around
+              Melbourne&apos;s CBD
+            </p>
+          </div>
+        </header>
+
+        <div className={styles.panelArea}>
+          <button
+            type="button"
+            className={`${styles.menuButton} ${
+              panelOpen
+                ? styles.menuButtonOpen
+                : styles.menuButtonClosed
+            }`}
+            aria-label={
+              panelOpen
+                ? "Close route planner"
+                : "Open route planner"
+            }
+            aria-expanded={panelOpen}
+            aria-controls="side-panel"
+            onClick={handleTogglePlanner}
+          >
+            {panelOpen ? "×" : "☰"}
+          </button>
+
+          {!panelOpen && !infoOpen && (
+            <button
+              type="button"
+              className={styles.infoButton}
+              aria-label="About this planner"
+              aria-expanded={false}
+              aria-controls="information-panel"
+              title="About this planner"
+              onClick={handleOpenInformation}
+            >
+              <span aria-hidden="true">i</span>
+            </button>
+          )}
+
+          <div
+            className={`${styles.sidePanel} ${
+              panelOpen
+                ? styles.sidePanelOpen
+                : styles.sidePanelClosed
+            }`}
+            id="side-panel"
+            tabIndex={-1}
+          >
+            {sidePanel}
+          </div>
+
+          {panelOpen && (
+            <div
+              className={styles.sidePanelTopFade}
+              aria-hidden="true"
+            />
+          )}
+
+          {infoOpen && (
+            <div
+              className={styles.informationOverlay}
+              id="information-panel"
+            >
+              <InformationPanel
+                onClose={() => setInfoOpen(false)}
+              />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

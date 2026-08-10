@@ -9,17 +9,36 @@ interface ExpandRadiusDialogProps {
   onDismiss: () => void;
 }
 
-export function ExpandRadiusDialog({ message, nextRadiusM, onExpand, onDismiss }: ExpandRadiusDialogProps) {
+export function ExpandRadiusDialog({
+  message,
+  nextRadiusM,
+  onExpand,
+  onDismiss,
+}: ExpandRadiusDialogProps) {
   const expandButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     expandButtonRef.current?.focus();
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onDismiss();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onDismiss();
+      }
     };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [onDismiss]);
+
+  const formattedRadius =
+    nextRadiusM !== null
+      ? nextRadiusM >= 1000
+        ? `${nextRadiusM / 1000} km`
+        : `${nextRadiusM} m`
+      : null;
 
   return (
     <div className={styles.dialogOverlay}>
@@ -30,15 +49,32 @@ export function ExpandRadiusDialog({ message, nextRadiusM, onExpand, onDismiss }
         aria-labelledby="expand-radius-heading"
         aria-describedby="expand-radius-message"
       >
-        <h3 id="expand-radius-heading">No quiet spaces found</h3>
-        <p id="expand-radius-message">{message}</p>
+        <h3 id="expand-radius-heading">
+          No quiet spaces found
+        </h3>
+
+        <p id="expand-radius-message">
+          {message}
+        </p>
+
         <div className={styles.dialogActions}>
           {nextRadiusM !== null && (
-            <Button type="button" ref={expandButtonRef} onClick={onExpand}>
-              Search within {nextRadiusM >= 1000 ? `${nextRadiusM / 1000} km` : `${nextRadiusM} m`}
+            <Button
+              type="button"
+              ref={expandButtonRef}
+              className={styles.expandButton}
+              onClick={onExpand}
+            >
+              Search within {formattedRadius}
             </Button>
           )}
-          <Button type="button" variant="secondary" onClick={onDismiss}>
+
+          <Button
+            type="button"
+            variant="secondary"
+            className={styles.closeDialogButton}
+            onClick={onDismiss}
+          >
             Close
           </Button>
         </div>

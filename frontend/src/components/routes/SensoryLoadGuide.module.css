@@ -1,0 +1,112 @@
+.guide {
+  width: 100%;
+  padding: 24px;
+
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.97);
+
+  border: 1px solid rgba(23, 79, 158, 0.14);
+  border-radius: 20px;
+
+  box-shadow: 0 14px 32px rgba(23, 79, 158, 0.1);
+  backdrop-filter: blur(12px);
+
+  font-family: "Fira Sans", Arial, sans-serif;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+
+  color: #174f9e;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.45rem;
+  line-height: 1.25;
+}
+
+.list {
+  margin-top: 22px;
+  border-top: 1px solid var(--color-border);
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 32px 88px 1fr;
+  gap: 12px;
+  align-items: center;
+
+  min-height: 70px;
+  padding: 12px 0;
+
+  border-bottom: 1px solid var(--color-border);
+}
+
+.glyph {
+  width: 30px;
+  height: 30px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.low {
+  color: var(--color-sensory-low);
+  background: #e4f1e9;
+}
+
+.medium {
+  color: var(--color-sensory-medium);
+  background: #f8edd1;
+}
+
+.high {
+  color: var(--color-sensory-high);
+  background: #f7dfdf;
+}
+
+.label {
+  font-size: 0.95rem;
+}
+
+.description {
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.note {
+  margin: 18px 0 0;
+
+  color: var(--color-text-muted);
+  font-size: 0.83rem;
+  line-height: 1.45;
+}
+
+.compact {
+  padding: 20px;
+}
+
+.compact .title {
+  font-size: 1.2rem;
+}
+
+.compact .item {
+  grid-template-columns: 28px 78px 1fr;
+  gap: 9px;
+}
+
+.compact .glyph {
+  width: 27px;
+  height: 27px;
+}

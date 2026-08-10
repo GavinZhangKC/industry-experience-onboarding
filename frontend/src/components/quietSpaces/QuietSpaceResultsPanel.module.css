@@ -62,17 +62,86 @@
 }
 
 .dialog {
-  background: var(--color-surface);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5);
-  max-width: 400px;
+  width: min(520px, calc(100vw - 32px));
+  max-width: 520px;
+  padding: 30px;
+
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: 24px;
+
+  color: #24364b;
+  background: #ffffff;
+
+  border: 1px solid rgba(23, 79, 158, 0.14);
+  border-radius: 20px;
+
+  box-shadow: 0 20px 48px rgba(23, 52, 95, 0.22);
+
+  font-family: "Fira Sans", Arial, sans-serif;
+}
+
+.dialog h3 {
+  margin: 0;
+
+  color: #174f9e;
+
+  font-family: "Fira Sans", Arial, sans-serif;
+  font-size: clamp(1.6rem, 3vw, 1.9rem);
+  font-weight: 700;
+  line-height: 1.15;
+
+  letter-spacing: -0.02em;
+}
+
+.dialog p {
+  margin: 0;
+
+  color: #526783;
+
+  font-size: 1rem;
+  line-height: 1.55;
 }
 
 .dialogActions {
   display: flex;
-  gap: var(--space-3);
+  align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
+
+  gap: 16px;
+}
+
+.dialogActions .expandButton {
+  min-width: 220px;
+
+  color: #ffffff;
+  background: #174f9e;
+
+  border-color: #174f9e;
+}
+
+.dialogActions .expandButton:not(:disabled):hover {
+  color: #ffffff;
+  background: #103f82;
+
+  border-color: #103f82;
+
+  box-shadow: 0 6px 16px rgba(23, 79, 158, 0.24);
+}
+
+.dialogActions .closeDialogButton {
+  min-width: 120px;
+
+  color: #174f9e;
+  background: #ffffff;
+
+  border-color: #9ebbe2;
+}
+
+.dialogActions .closeDialogButton:not(:disabled):hover {
+  color: #174f9e;
+  background: #e8f1ff;
+
+  border-color: #174f9e;
 }

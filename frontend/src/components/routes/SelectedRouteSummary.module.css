@@ -1,0 +1,126 @@
+.card {
+  width: min(330px, calc(100vw - 48px));
+  padding: 18px;
+
+  color: #24364b;
+  background: rgba(255, 255, 255, 0.97);
+
+  border: 1px solid rgba(23, 79, 158, 0.16);
+  border-radius: 20px;
+
+  box-shadow: 0 14px 34px rgba(24, 52, 91, 0.2);
+  backdrop-filter: blur(12px);
+
+  font-family: "Fira Sans", Arial, sans-serif;
+}
+
+.heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.heading strong {
+  color: #17345f;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.heading span {
+  color: #526783;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.level {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-top: 12px;
+  padding: 8px 12px;
+
+  border-radius: 999px;
+
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.level span {
+  font-size: 0.72rem;
+}
+
+.low {
+  color: #285f43;
+  background: #e3f3e9;
+}
+
+.medium {
+  color: #70570e;
+  background: #faefcf;
+}
+
+.high {
+  color: #823333;
+  background: #f8dfdf;
+}
+
+.details {
+  margin: 14px 0 0;
+}
+
+.details div {
+  display: flex;
+  gap: 6px;
+}
+
+.details dt {
+  color: #526783;
+}
+
+.details dt::after {
+  content: ":";
+}
+
+.details dd {
+  margin: 0;
+  color: #24364b;
+  font-weight: 600;
+}
+
+.explanation {
+  margin: 10px 0 0;
+
+  color: #526783;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.exitButton {
+  display: block;
+
+  margin: 16px 0 0 auto;
+  padding: 8px 16px;
+
+  color: #174f9e;
+  background: #ffffff;
+
+  border: 1px solid #174f9e;
+  border-radius: 999px;
+
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.exitButton:hover {
+  background: #e8f1ff;
+}
+
+.exitButton:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
