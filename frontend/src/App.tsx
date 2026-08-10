@@ -12,6 +12,7 @@ import { FindQuietSpaceButton } from "./components/quietSpaces/FindQuietSpaceBut
 import { QuietSpaceResultsPanel } from "./components/quietSpaces/QuietSpaceResultsPanel";
 import { useRoutes } from "./hooks/useRoutes";
 import { useQuietSpaces, RADIUS_STEPS_M } from "./hooks/useQuietSpaces";
+import { SelectedRouteSummary } from "./components/routes/SelectedRouteSummary";
 
 type PrimaryView = "input" | "routes";
 
@@ -177,16 +178,22 @@ function App() {
         onClearField={handleClearField}
         onClearAll={handleClearAll}
         onSearch={handleSearchRoutes}
+        quietSpaceAction={
+          <FindQuietSpaceButton
+            mapCenter={mapCenter}
+            onFind={handleFindQuietSpace}
+          />
+        }
         loading={routes.loading}
         error={routes.error}
       />
-
-      <FindQuietSpaceButton
-        mapCenter={mapCenter}
-        onFind={handleFindQuietSpace}
-      />
     </>
   );
+
+  const selectedRoute =
+  routes.routes?.find(
+    (route) => route.id === selectedRouteId
+  ) ?? null;
 
   return (
     <AppShell
@@ -206,6 +213,14 @@ function App() {
             />
           )}
         </MapView>
+      }
+      mapOverlay={
+        selectedRoute ? (
+          <SelectedRouteSummary
+            route={selectedRoute}
+            onExit={() => setSelectedRouteId(null)}
+          />
+        ) : null
       }
       sidePanel={sidePanel}
     />

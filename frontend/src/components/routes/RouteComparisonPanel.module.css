@@ -7,7 +7,15 @@
 
 .title {
   margin: 0;
-  font-size: 1.1rem;
+
+  color: #174f9e;
+
+  font-family: "Fira Sans", Arial, sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.25;
+
+  letter-spacing: -0.015em;
 }
 
 .list {
@@ -17,4 +25,25 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+}
+
+.panel .newSearchButton {
+  width: 100%;
+
+  color: #174f9e;
+  background: #ffffff;
+
+  border-color: #9ebbe2;
+
+  font-family: "Fira Sans", Arial, sans-serif;
+  font-weight: 600;
+}
+
+.panel .newSearchButton:not(:disabled):hover {
+  color: #174f9e;
+  background: #e8f1ff;
+
+  border-color: #174f9e;
+
+  box-shadow: 0 5px 14px rgba(23, 79, 158, 0.14);
 }

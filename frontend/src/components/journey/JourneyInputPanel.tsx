@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { ApiError, Coordinate } from "../../api/types";
 import { Button } from "../common/Button";
 import { ErrorBanner } from "../common/ErrorBanner";
@@ -19,6 +20,7 @@ interface JourneyInputPanelProps {
   onClearField: (field: "origin" | "destination") => void;
   onClearAll: () => void;
   onSearch: () => void;
+  quietSpaceAction: ReactNode;
   loading: boolean;
   error: ApiError | null;
 }
@@ -33,6 +35,7 @@ export function JourneyInputPanel({
   onTogglePicking,
   onClearAll,
   onSearch,
+  quietSpaceAction,
   loading,
   error,
 }: JourneyInputPanelProps) {
@@ -69,11 +72,21 @@ export function JourneyInputPanel({
         />
       </div>
       <div className={styles.actions}>
-        <Button type="button" variant="secondary" onClick={onClearAll}>
+        <Button
+          type="button"
+          variant="secondary"
+          className={styles.resetButton}
+          onClick={onClearAll}
+        >
           Reset
         </Button>
 
-        <Button type="button" onClick={onSearch} disabled={!canSearch}>
+        <Button
+          type="button"
+          className={styles.searchButton}
+          onClick={onSearch}
+          disabled={!canSearch}
+        >
           {loading ? "Finding routes…" : "Find routes"}
         </Button>
       </div>
@@ -81,6 +94,9 @@ export function JourneyInputPanel({
       {error && <ErrorBanner message={error.message} />}
 
       <SensoryPreferences />
+      <div className={styles.quietSpaceAction}>
+        {quietSpaceAction}
+      </div>
     </section>
   );
 }

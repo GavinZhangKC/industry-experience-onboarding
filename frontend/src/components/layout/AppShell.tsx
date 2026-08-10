@@ -1,8 +1,10 @@
 import { useState, type ReactNode } from "react";
+import { InformationPanel } from "./InformationPanel";
 import styles from "./AppShell.module.css";
 
 interface AppShellProps {
   map: ReactNode;
+  mapOverlay?: ReactNode;
   sidePanel: ReactNode;
 }
 
@@ -18,28 +20,64 @@ function BrandMark() {
           strokeLinecap="round"
         />
 
-        <circle cx="11" cy="29" r="3" fill="currentColor" />
-        <circle cx="29" cy="18" r="3" fill="currentColor" />
+        <circle
+          cx="11"
+          cy="29"
+          r="3"
+          fill="currentColor"
+        />
+
+        <circle
+          cx="29"
+          cy="18"
+          r="3"
+          fill="currentColor"
+        />
       </svg>
     </div>
   );
 }
 
-export function AppShell({ map, sidePanel }: AppShellProps) {
+export function AppShell({
+  map,
+  mapOverlay,
+  sidePanel,
+}: AppShellProps) {
   const [panelOpen, setPanelOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
+
+  function handleTogglePlanner() {
+    setInfoOpen(false);
+    setPanelOpen((current) => !current);
+  }
+
+  function handleOpenInformation() {
+    setPanelOpen(false);
+    setInfoOpen(true);
+  }
 
   return (
     <div className={styles.shell}>
       <a
         href="#side-panel"
         className="skip-link"
-        onClick={() => setPanelOpen(true)}
+        onClick={() => {
+          setInfoOpen(false);
+          setPanelOpen(true);
+        }}
       >
         Skip to controls
       </a>
 
       <div className={styles.body}>
-        <div className={styles.mapArea}>{map}</div>
+        <div className={styles.mapArea}>
+          {map}
+          {mapOverlay && (
+            <div className={styles.mapOverlay}>
+              {mapOverlay}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className={styles.floatingLayer}>
@@ -52,7 +90,8 @@ export function AppShell({ map, sidePanel }: AppShellProps) {
             </h1>
 
             <p className={styles.headerSubtitle}>
-              Calm walking routes and quiet spaces around Melbourne&apos;s CBD
+              Calm walking routes and quiet spaces around
+              Melbourne&apos;s CBD
             </p>
           </div>
         </header>
@@ -72,10 +111,24 @@ export function AppShell({ map, sidePanel }: AppShellProps) {
             }
             aria-expanded={panelOpen}
             aria-controls="side-panel"
-            onClick={() => setPanelOpen((current) => !current)}
+            onClick={handleTogglePlanner}
           >
             {panelOpen ? "×" : "☰"}
           </button>
+
+          {!panelOpen && !infoOpen && (
+            <button
+              type="button"
+              className={styles.infoButton}
+              aria-label="About this planner"
+              aria-expanded={false}
+              aria-controls="information-panel"
+              title="About this planner"
+              onClick={handleOpenInformation}
+            >
+              <span aria-hidden="true">i</span>
+            </button>
+          )}
 
           <div
             className={`${styles.sidePanel} ${
@@ -88,6 +141,24 @@ export function AppShell({ map, sidePanel }: AppShellProps) {
           >
             {sidePanel}
           </div>
+
+          {panelOpen && (
+            <div
+              className={styles.sidePanelTopFade}
+              aria-hidden="true"
+            />
+          )}
+
+          {infoOpen && (
+            <div
+              className={styles.informationOverlay}
+              id="information-panel"
+            >
+              <InformationPanel
+                onClose={() => setInfoOpen(false)}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

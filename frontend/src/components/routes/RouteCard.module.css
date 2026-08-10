@@ -1,44 +1,86 @@
 .card {
-  display: block;
+  box-sizing: border-box;
   width: 100%;
-  text-align: left;
-  padding: var(--space-4);
-  border-radius: var(--radius-md);
-  border: 2px solid var(--color-border);
-  background: var(--color-surface);
+
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: 14px;
+
+  padding: 18px;
+
+  color: #24364b;
+  background: #ffffff;
+
+  border: 2px solid #d8e0eb;
+  border-radius: 14px;
+
+  font-family: "Fira Sans", Arial, sans-serif;
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.card:hover {
+  background: #f8fbff;
+  border-color: #9ebbe2;
+
+  box-shadow: 0 6px 16px rgba(23, 79, 158, 0.1);
+  transform: translateY(-1px);
 }
 
 .card[aria-pressed="true"] {
-  border-color: var(--color-accent);
-  background: var(--color-surface-muted);
+  background: #f2f7fd;
+  border-color: #174f9e;
+
+  box-shadow:
+    0 0 0 1px rgba(23, 79, 158, 0.08),
+    0 7px 18px rgba(23, 79, 158, 0.14);
+}
+
+.card[aria-pressed="true"]:hover {
+  background: #edf4fc;
+  border-color: #103f82;
 }
 
 .headerRow {
   display: flex;
-  justify-content: space-between;
   align-items: baseline;
-  gap: var(--space-2);
+  justify-content: space-between;
   flex-wrap: wrap;
+
+  gap: 8px;
 }
 
 .label {
-  font-weight: 700;
+  color: #17345f;
+
   font-size: 1.05rem;
+  font-weight: 700;
 }
 
 .metrics {
-  color: var(--color-text-muted);
+  color: #526783;
+
   font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .explanation {
   margin: 0;
+
+  color: #526783;
+
+  font-size: 0.95rem;
+  line-height: 1.48;
 }
 
 .selectedTag {
+  color: #174f9e;
   font-weight: 700;
-  color: var(--color-accent);
 }

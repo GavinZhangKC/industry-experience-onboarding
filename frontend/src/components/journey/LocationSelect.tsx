@@ -1,4 +1,10 @@
-import { useId } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from "react";
 import type { Coordinate } from "../../api/types";
 import { MELBOURNE_LANDMARKS } from "../../constants/landmarks";
 import styles from "./LocationSelect.module.css";
@@ -11,6 +17,12 @@ interface LocationSelectProps {
   onSelectLandmark: (landmarkId: string) => void;
   isPicking: boolean;
   onTogglePicking: () => void;
+}
+
+interface LocationOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
 }
 
 function MapPinIcon() {
@@ -43,9 +55,179 @@ export function LocationSelect({
   onTogglePicking,
 }: LocationSelectProps) {
   const selectId = useId();
+  const listboxId = `${selectId}-listbox`;
+  const labelId = `${selectId}-label`;
+
+  const rootRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const isCustomPoint =
     value !== null && selectedLandmarkId === null;
+
+  const selectedValue = isCustomPoint
+    ? "__custom__"
+    : selectedLandmarkId ?? "";
+
+  const options: LocationOption[] = [
+    {
+      value: "",
+      label,
+    },
+    ...(isCustomPoint
+      ? [
+          {
+            value: "__custom__",
+            label: "Custom map point",
+            disabled: true,
+          },
+        ]
+      : []),
+    ...MELBOURNE_LANDMARKS.map((landmark) => ({
+      value: landmark.id,
+      label: landmark.name,
+    })),
+  ];
+
+  const selectedOption = options.find(
+    (option) => option.value === selectedValue,
+  );
+
+  const enabledIndexes = options
+    .map((option, index) => (option.disabled ? -1 : index))
+    .filter((index) => index !== -1);
+
+  function openMenu() {
+    const selectedIndex = options.findIndex(
+      (option) =>
+        option.value === selectedValue && !option.disabled,
+    );
+
+    setActiveIndex(
+      selectedIndex >= 0 ? selectedIndex : enabledIndexes[0] ?? 0,
+    );
+
+    setIsOpen(true);
+  }
+
+  function moveActive(direction: 1 | -1) {
+    const currentPosition = enabledIndexes.indexOf(activeIndex);
+
+    let nextPosition: number;
+
+    if (currentPosition === -1) {
+      nextPosition = direction === 1 ? 0 : enabledIndexes.length - 1;
+    } else {
+      nextPosition =
+        (currentPosition + direction + enabledIndexes.length) %
+        enabledIndexes.length;
+    }
+
+    setActiveIndex(enabledIndexes[nextPosition]);
+  }
+
+  function selectOption(index: number) {
+    const option = options[index];
+
+    if (!option || option.disabled) return;
+
+    onSelectLandmark(option.value);
+    setActiveIndex(index);
+    setIsOpen(false);
+  }
+
+  function handleKeyDown(
+    event: KeyboardEvent<HTMLButtonElement>,
+  ) {
+    switch (event.key) {
+      case "ArrowDown":
+        event.preventDefault();
+
+        if (isOpen) {
+          moveActive(1);
+        } else {
+          openMenu();
+        }
+        break;
+
+      case "ArrowUp":
+        event.preventDefault();
+
+        if (isOpen) {
+          moveActive(-1);
+        } else {
+          openMenu();
+        }
+        break;
+
+      case "Home":
+        if (isOpen) {
+          event.preventDefault();
+          setActiveIndex(enabledIndexes[0]);
+        }
+        break;
+
+      case "End":
+        if (isOpen) {
+          event.preventDefault();
+          setActiveIndex(
+            enabledIndexes[enabledIndexes.length - 1],
+          );
+        }
+        break;
+
+      case "Enter":
+      case " ":
+        event.preventDefault();
+
+        if (isOpen) {
+          selectOption(activeIndex);
+        } else {
+          openMenu();
+        }
+        break;
+
+      case "Escape":
+        event.preventDefault();
+        setIsOpen(false);
+        break;
+    }
+  }
+
+  useEffect(() => {
+    function handleOutsideClick(event: PointerEvent) {
+      if (
+        rootRef.current &&
+        !rootRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener(
+        "pointerdown",
+        handleOutsideClick,
+      );
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const activeOption =
+      listRef.current?.querySelector<HTMLElement>(
+        `[data-option-index="${activeIndex}"]`,
+      );
+
+    activeOption?.scrollIntoView({
+      block: "nearest",
+    });
+  }, [activeIndex, isOpen]);
 
   return (
     <div className={styles.fieldRow}>
@@ -59,37 +241,112 @@ export function LocationSelect({
       />
 
       <div className={styles.field}>
-        <label className="visually-hidden" htmlFor={selectId}>
+        <span
+          id={labelId}
+          className="visually-hidden"
+        >
           {label}
-        </label>
+        </span>
 
         <div className={styles.inputShell}>
-          <select
-            id={selectId}
-            className={styles.select}
-            value={
-              isCustomPoint
-                ? "__custom__"
-                : selectedLandmarkId ?? ""
-            }
-            onChange={(event) =>
-              onSelectLandmark(event.target.value)
-            }
+          <div
+            className={styles.selectControl}
+            ref={rootRef}
           >
-            <option value="">{label}</option>
+            <button
+              id={selectId}
+              type="button"
+              className={styles.selectButton}
+              aria-labelledby={labelId}
+              aria-haspopup="listbox"
+              aria-expanded={isOpen}
+              aria-controls={listboxId}
+              aria-activedescendant={
+                isOpen
+                  ? `${selectId}-option-${activeIndex}`
+                  : undefined
+              }
+              onClick={() => {
+                if (isOpen) {
+                  setIsOpen(false);
+                } else {
+                  openMenu();
+                }
+              }}
+              onKeyDown={handleKeyDown}
+              onBlur={() => setIsOpen(false)}
+            >
+              <span className={styles.selectedText}>
+                {selectedOption?.label ?? label}
+              </span>
 
-            {isCustomPoint && (
-              <option value="__custom__" disabled>
-                Custom map point
-              </option>
+              <span
+                className={`${styles.chevron} ${
+                  isOpen ? styles.chevronOpen : ""
+                }`}
+                aria-hidden="true"
+              >
+                ▾
+              </span>
+            </button>
+
+            {isOpen && (
+              <ul
+                ref={listRef}
+                id={listboxId}
+                className={styles.optionList}
+                role="listbox"
+                aria-labelledby={labelId}
+              >
+                {options.map((option, index) => {
+                  const isSelected =
+                    option.value === selectedValue;
+                  const isActive = index === activeIndex;
+
+                  return (
+                    <li
+                      key={`${option.value}-${index}`}
+                      id={`${selectId}-option-${index}`}
+                      role="option"
+                      aria-selected={isSelected}
+                      aria-disabled={option.disabled}
+                      data-option-index={index}
+                      className={[
+                        styles.option,
+                        isActive ? styles.optionActive : "",
+                        isSelected ? styles.optionSelected : "",
+                        option.disabled
+                          ? styles.optionDisabled
+                          : "",
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                      onMouseEnter={() => {
+                        if (!option.disabled) {
+                          setActiveIndex(index);
+                        }
+                      }}
+                      onPointerDown={(event) => {
+                        event.preventDefault();
+                        selectOption(index);
+                      }}
+                    >
+                      <span>{option.label}</span>
+
+                      {isSelected && (
+                        <span
+                          className={styles.optionCheck}
+                          aria-hidden="true"
+                        >
+                          ✓
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
             )}
-
-            {MELBOURNE_LANDMARKS.map((landmark) => (
-              <option key={landmark.id} value={landmark.id}>
-                {landmark.name}
-              </option>
-            ))}
-          </select>
+          </div>
 
           <button
             type="button"

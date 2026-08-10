@@ -8,27 +8,26 @@
   gap: 12px;
 }
 
+.fieldRow:focus-within {
+  z-index: 20;
+}
+
 .originMarker,
 .destinationMarker {
   justify-self: center;
   margin-top: 16px;
 }
 
-/* 蓝色起点 */
-
 .originMarker {
   width: 18px;
   height: 18px;
 
-  border: 4px solid #d8dcff;
+  border: 4px solid #dbe9ff;
   border-radius: 50%;
 
-  background: #5264ff;
-
+  background: #174f9e;
   box-shadow: 0 0 0 2px var(--color-surface);
 }
-
-/* 红色终点大头针 */
 
 .destinationMarker {
   position: relative;
@@ -36,13 +35,12 @@
   width: 20px;
   height: 20px;
 
-  border: 3px solid #ff4b55;
+  border: 3px solid #174f9e;
   border-radius: 50% 50% 50% 0;
 
   background: var(--color-surface);
 
   transform: rotate(-45deg);
-
   box-shadow: 0 0 0 2px var(--color-surface);
 }
 
@@ -50,15 +48,13 @@
   content: "";
 
   position: absolute;
-  top: 4px;
-  left: 4px;
 
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
+  margin: 4px;
 
   border-radius: 50%;
-
-  background: #ff4b55;
+  background: #174f9e;
 }
 
 .field {
@@ -71,7 +67,7 @@
   display: flex;
   align-items: stretch;
 
-  overflow: hidden;
+  overflow: visible;
 
   border: 1px solid #d5d7dc;
   border-radius: 10px;
@@ -82,23 +78,190 @@
 }
 
 .inputShell:focus-within {
-  border-color: #5264ff;
+  border-color: #174f9e;
 
   box-shadow:
-    0 0 0 3px rgba(82, 100, 255, 0.16),
-    0 4px 12px rgba(25, 31, 45, 0.14);
+    0 0 0 3px rgba(23, 79, 158, 0.16),
+    0 4px 12px rgba(25, 31, 45, 0.12);
 }
 
-.select {
+.selectControl {
+  position: relative;
+
   min-width: 0;
   flex: 1;
+}
 
-  padding: 0 12px 0 16px;
+.selectButton {
+  width: 100%;
+  height: 100%;
+  min-height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 0 14px 0 16px;
 
   border: 0;
+  border-radius: 9px 0 0 9px;
 
-  background: var(--color-surface);
-  color: var(--color-text);
+  color: #24364b;
+  background: #ffffff;
+
+  font-family: "Fira Sans", Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.3;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.selectButton:hover {
+  background: #f7faff;
+}
+
+.selectButton:focus {
+  outline: none;
+}
+
+.selectedText {
+  min-width: 0;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  flex: 0 0 auto;
+
+  color: #174f9e;
+
+  font-size: 0.95rem;
+
+  transition: transform 160ms ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.optionList {
+  position: absolute;
+  z-index: 100;
+
+  top: calc(100% + 7px);
+  left: 0;
+
+  width: 100%;
+  max-height: 242px;
+  margin: 0;
+  padding: 6px;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  list-style: none;
+
+  border: 1px solid #9ebbe2;
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 14px 30px rgba(23, 52, 95, 0.18),
+    0 3px 8px rgba(23, 52, 95, 0.1);
+
+  scrollbar-width: thin;
+  scrollbar-color: #9ebbe2 transparent;
+}
+
+.optionList::-webkit-scrollbar {
+  width: 8px;
+}
+
+.optionList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.optionList::-webkit-scrollbar-thumb {
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+
+  background: #9ebbe2;
+}
+
+.optionList::-webkit-scrollbar-button {
+  display: none;
+
+  width: 0;
+  height: 0;
+}
+
+.option {
+  min-height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 9px 12px;
+
+  border-radius: 8px;
+
+  color: #24364b;
+  background: #ffffff;
+
+  font-family: "Fira Sans", Arial, sans-serif;
+  font-size: 0.98rem;
+  line-height: 1.35;
+
+  cursor: pointer;
+
+  transition:
+    color 120ms ease,
+    background-color 120ms ease;
+}
+
+.option:hover,
+.optionActive {
+  color: #174f9e;
+  background: #e8f1ff;
+}
+
+.optionSelected {
+  color: #103f82;
+  background: #dbe9ff;
+
+  font-weight: 600;
+}
+
+.optionSelected.optionActive,
+.optionSelected:hover {
+  color: #103f82;
+  background: #dbe9ff;
+}
+
+.optionDisabled {
+  color: #6c7c91;
+  background: #f5f7fa;
+
+  cursor: default;
+}
+
+.optionDisabled:hover {
+  color: #6c7c91;
+  background: #f5f7fa;
+}
+
+.optionCheck {
+  color: #174f9e;
+
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .pickButton {
@@ -109,6 +272,7 @@
 
   border: 0;
   border-left: 1px solid #d5d7dc;
+  border-radius: 0 9px 9px 0;
 
   background: var(--color-surface);
   color: var(--color-text);
@@ -119,22 +283,24 @@
 }
 
 .pickButton:hover {
-  background: var(--color-surface-muted);
+  color: #174f9e;
+  background: #e8f1ff;
 }
 
 .pickButtonActive {
-  background: #5264ff;
   color: #ffffff;
+  background: #174f9e;
 }
 
 .pickButtonActive:hover {
-  background: #4557e8;
+  color: #ffffff;
+  background: #103f82;
 }
 
 .hint {
   margin: 8px 0 0;
 
-  color: #4557e8;
+  color: #174f9e;
 
   font-size: 0.85rem;
 }

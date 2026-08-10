@@ -26,11 +26,21 @@ export function FindQuietSpaceButton({ mapCenter, onFind }: FindQuietSpaceButton
   };
 
   return (
-    <div className={styles.bar}>
-      <Button type="button" onClick={handleClick} disabled={loading}>
-        {loading ? "Finding your location…" : "Find quiet space"}
+    <div className={styles.wrapper}>
+      <Button
+        type="button"
+        className={styles.button}
+        onClick={handleClick}
+        disabled={loading}
+      >
+        {loading
+          ? "Finding your location…"
+          : "Find quiet space"}
       </Button>
-      <span className={styles.status}>Uses your location, or the map centre if unavailable.</span>
+
+      <span className={styles.status}>
+        Uses your location, or the map centre if unavailable.
+      </span>
     </div>
   );
 }
