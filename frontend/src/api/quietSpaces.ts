@@ -6,6 +6,7 @@ export function findQuietSpaces(
   lng: number,
   radiusM = 500,
   limit = 5,
+  signal?: AbortSignal,
 ): Promise<QuietSpaceResponse> {
   const params = new URLSearchParams({
     lat: String(lat),
@@ -13,5 +14,5 @@ export function findQuietSpaces(
     radius_m: String(radiusM),
     limit: String(limit),
   });
-  return apiGet<QuietSpaceResponse>(`/api/v1/quiet-spaces?${params}`);
+  return apiGet<QuietSpaceResponse>(`/api/v1/quiet-spaces?${params}`, { signal });
 }
