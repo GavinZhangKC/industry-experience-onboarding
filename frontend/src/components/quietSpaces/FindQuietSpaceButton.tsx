@@ -1,27 +1,34 @@
 import type { Coordinate } from "../../api/types";
 import { useGeolocation } from "../../hooks/useGeolocation";
+import { isWithinQuietSpaceServiceArea } from "../../lib/quietSpaceServiceArea";
 import { Button } from "../common/Button";
 import styles from "./FindQuietSpaceButton.module.css";
 
 interface FindQuietSpaceButtonProps {
-  mapCenter: Coordinate;
   onFind: (center: Coordinate, note: string | null) => void;
+  onPickOnMap: (message: string) => void;
 }
 
 // Always visible, one click away from any screen (this is the one required
 // interaction; geolocation permission, if prompted, is the browser's UI, not
-// ours). Tries the user's real location first and falls back to the current
-// map centre so the feature never dead-ends.
-export function FindQuietSpaceButton({ mapCenter, onFind }: FindQuietSpaceButtonProps) {
+// ours). Locations outside the CBD data coverage switch to explicit map
+// selection instead of silently searching around an unrelated coordinate.
+export function FindQuietSpaceButton({ onFind, onPickOnMap }: FindQuietSpaceButtonProps) {
   const { loading, getCurrentPosition } = useGeolocation();
 
   const handleClick = async () => {
     try {
       const position = await getCurrentPosition();
-      onFind(position, null);
+      if (isWithinQuietSpaceServiceArea(position)) {
+        onFind(position, "Using your current location.");
+        return;
+      }
+      onPickOnMap(
+        "Your current location is outside the Melbourne CBD search area. Click a point on the CBD map to search there.",
+      );
     } catch (err) {
       const message = err instanceof Error ? err.message : "Couldn't determine your location.";
-      onFind(mapCenter, `${message} Showing quiet spaces near the map centre instead.`);
+      onPickOnMap(`${message} Click a point on the CBD map to search there.`);
     }
   };
 
@@ -39,7 +46,7 @@ export function FindQuietSpaceButton({ mapCenter, onFind }: FindQuietSpaceButton
       </Button>
 
       <span className={styles.status}>
-        Uses your location, or the map centre if unavailable.
+        Uses your location in the CBD, or lets you choose a point on the map.
       </span>
     </div>
   );

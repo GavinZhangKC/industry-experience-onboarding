@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { Coordinate, QuietSpace } from "./api/types";
 import { MELBOURNE_LANDMARKS } from "./constants/landmarks";
 import { AppShell } from "./components/layout/AppShell";
-import { MapView, MELBOURNE_CBD_CENTER } from "./components/map/MapView";
+import { MapView } from "./components/map/MapView";
 import { OriginDestinationMarkers } from "./components/map/OriginDestinationMarkers";
 import { RoutePolylines } from "./components/map/RoutePolylines";
 import { QuietSpaceMarkers } from "./components/map/QuietSpaceMarkers";
@@ -13,10 +13,12 @@ import { QuietSpaceResultsPanel } from "./components/quietSpaces/QuietSpaceResul
 import { useRoutes } from "./hooks/useRoutes";
 import { useQuietSpaces, RADIUS_STEPS_M } from "./hooks/useQuietSpaces";
 import { SelectedRouteSummary } from "./components/routes/SelectedRouteSummary";
+import {
+  isWithinQuietSpaceServiceArea,
+  QUIET_SPACE_CBD_CENTER,
+} from "./lib/quietSpaceServiceArea";
 
 type PrimaryView = "input" | "routes";
-
-const INITIAL_MAP_CENTER: Coordinate = { lat: MELBOURNE_CBD_CENTER[0], lng: MELBOURNE_CBD_CENTER[1] };
 
 function App() {
   const [origin, setOrigin] = useState<Coordinate | null>(null);
@@ -28,13 +30,14 @@ function App() {
   const [primaryView, setPrimaryView] = useState<PrimaryView>("input");
   const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
 
-  const [mapCenter, setMapCenter] = useState<Coordinate>(INITIAL_MAP_CENTER);
   const [panTarget, setPanTarget] = useState<Coordinate | null>(null);
   const [panTargetKey, setPanTargetKey] = useState(0);
 
   const [quietSpacePanelOpen, setQuietSpacePanelOpen] = useState(false);
   const [selectedQuietSpaceId, setSelectedQuietSpaceId] = useState<string | null>(null);
   const [quietSpaceLocationNote, setQuietSpaceLocationNote] = useState<string | null>(null);
+  const [pickingQuietSpaceLocation, setPickingQuietSpaceLocation] = useState(false);
+  const [quietSpaceCenterLabel, setQuietSpaceCenterLabel] = useState("Search location");
 
   const routes = useRoutes();
   const quietSpaces = useQuietSpaces();
@@ -98,6 +101,21 @@ function App() {
   }
 
   function handleMapClick(coordinate: Coordinate) {
+    if (pickingQuietSpaceLocation) {
+      if (!isWithinQuietSpaceServiceArea(coordinate)) {
+        setQuietSpaceLocationNote(
+          "That point is outside the Melbourne CBD search area. Please choose a point closer to the CBD.",
+        );
+        return;
+      }
+      setPickingQuietSpaceLocation(false);
+      setQuietSpaceLocationNote("Searching near the point you selected on the map.");
+      setQuietSpaceCenterLabel("Selected search location");
+      setSelectedQuietSpaceId(null);
+      panTo(coordinate);
+      quietSpaces.search(coordinate);
+      return;
+    }
     if (pickingField === "origin") {
       setOrigin(coordinate);
       setOriginLandmarkId(null);
@@ -122,9 +140,24 @@ function App() {
 
   function handleFindQuietSpace(center: Coordinate, note: string | null) {
     setQuietSpacePanelOpen(true);
+    setPickingQuietSpaceLocation(false);
+    setPickingField(null);
     setSelectedQuietSpaceId(null);
     setQuietSpaceLocationNote(note);
+    setQuietSpaceCenterLabel("Your location");
+    panTo(center);
     quietSpaces.search(center);
+  }
+
+  function handlePickQuietSpaceOnMap(message: string) {
+    setQuietSpacePanelOpen(true);
+    setPickingQuietSpaceLocation(true);
+    setPickingField(null);
+    setSelectedQuietSpaceId(null);
+    setQuietSpaceLocationNote(message);
+    setQuietSpaceCenterLabel("Selected search location");
+    quietSpaces.reset();
+    panTo(QUIET_SPACE_CBD_CENTER);
   }
 
   function handleSelectQuietSpace(space: QuietSpace) {
@@ -134,6 +167,7 @@ function App() {
 
   function handleCloseQuietSpacePanel() {
     setQuietSpacePanelOpen(false);
+    setPickingQuietSpaceLocation(false);
     setSelectedQuietSpaceId(null);
     setQuietSpaceLocationNote(null);
     quietSpaces.reset();
@@ -180,8 +214,8 @@ function App() {
         onSearch={handleSearchRoutes}
         quietSpaceAction={
           <FindQuietSpaceButton
-            mapCenter={mapCenter}
             onFind={handleFindQuietSpace}
+            onPickOnMap={handlePickQuietSpaceOnMap}
           />
         }
         loading={routes.loading}
@@ -198,18 +232,19 @@ function App() {
   return (
     <AppShell
       map={
-        <MapView onMapClick={handleMapClick} onCenterChange={setMapCenter} panTarget={panTarget} panTargetKey={panTargetKey}>
+        <MapView onMapClick={handleMapClick} panTarget={panTarget} panTargetKey={panTargetKey}>
           <OriginDestinationMarkers origin={origin} destination={destination} />
           {primaryView === "routes" && routes.routes && (
             <RoutePolylines routes={routes.routes} selectedRouteId={selectedRouteId} onSelectRoute={setSelectedRouteId} />
           )}
-          {quietSpacePanelOpen && quietSpaces.data && (
+          {quietSpacePanelOpen && quietSpaces.center && (
             <QuietSpaceMarkers
-              spaces={quietSpaces.data.quiet_spaces}
+              spaces={quietSpaces.data?.quiet_spaces ?? []}
               selectedId={selectedQuietSpaceId}
               onSelect={handleSelectQuietSpace}
               searchCenter={quietSpaces.center}
-              radiusM={quietSpaces.data.radius_m}
+              radiusM={quietSpaces.data?.radius_m ?? RADIUS_STEPS_M[0]}
+              searchCenterLabel={quietSpaceCenterLabel}
             />
           )}
         </MapView>

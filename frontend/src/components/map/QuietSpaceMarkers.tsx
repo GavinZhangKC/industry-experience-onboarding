@@ -1,4 +1,4 @@
-import { Circle, Marker, Tooltip } from "react-leaflet";
+import { Circle, CircleMarker, Marker, Tooltip } from "react-leaflet";
 import type { QuietSpace } from "../../api/types";
 import { quietSpaceIcon, quietSpaceSelectedIcon } from "./icons";
 
@@ -8,17 +8,36 @@ interface QuietSpaceMarkersProps {
   onSelect: (space: QuietSpace) => void;
   searchCenter?: { lat: number; lng: number } | null;
   radiusM?: number;
+  searchCenterLabel?: string;
 }
 
-export function QuietSpaceMarkers({ spaces, selectedId, onSelect, searchCenter, radiusM }: QuietSpaceMarkersProps) {
+export function QuietSpaceMarkers({
+  spaces,
+  selectedId,
+  onSelect,
+  searchCenter,
+  radiusM,
+  searchCenterLabel = "Search location",
+}: QuietSpaceMarkersProps) {
   return (
     <>
       {searchCenter && radiusM && (
-        <Circle
-          center={[searchCenter.lat, searchCenter.lng]}
-          radius={radiusM}
-          pathOptions={{ color: "#2f6b63", weight: 1, opacity: 0.5, fillOpacity: 0.05 }}
-        />
+        <>
+          <Circle
+            center={[searchCenter.lat, searchCenter.lng]}
+            radius={radiusM}
+            pathOptions={{ color: "#2f6b63", weight: 1, opacity: 0.5, fillOpacity: 0.05 }}
+          />
+          <CircleMarker
+            center={[searchCenter.lat, searchCenter.lng]}
+            radius={8}
+            pathOptions={{ color: "#ffffff", weight: 3, fillColor: "#174f9e", fillOpacity: 1 }}
+          >
+            <Tooltip permanent direction="top" offset={[0, -8]}>
+              {searchCenterLabel}
+            </Tooltip>
+          </CircleMarker>
+        </>
       )}
       {spaces.map((space) => (
         <Marker
