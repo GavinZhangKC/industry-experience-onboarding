@@ -121,6 +121,13 @@ npm run ingest:pedestrian
 npm run ingest:refuges
 ```
 
+For an existing Aurora database, apply
+`migrations/001_ingestion_idempotency.sql` through the team's normal database
+migration process before running the updated scripts. Fresh databases can use
+the current `schema.sql` directly. The scripts use source-keyed upserts, so
+rerunning them updates known locations and readings instead of duplicating
+them.
+
 ## AWS deployment
 
 The root `template.yaml` packages `backend/` as a Python Lambda and exposes the
@@ -211,8 +218,8 @@ enforced in code rather than by convention.
 - Deploy the SAM stack with the team's Aurora ARNs and frontend origin.
 - Turn the Node ingestion scripts into scheduled/operated AWS jobs if automatic
   refresh is required; today they are manually invoked utilities.
-- Add pagination and idempotent writes before using ingestion repeatedly at
-  production scale (the current source requests are limited to 100 records).
+- Add pagination before using ingestion at production scale; the current source
+  requests are limited to 100 records.
 - Replace the hand-seeded JSON data before treating JSON mode as production
   data; it remains suitable for the current Vercel demo deployment.
 - Implement a real live "quiet now" signal for US2.2; the current description

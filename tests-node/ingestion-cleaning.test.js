@@ -43,4 +43,24 @@ test('cleanRefugeRecord keeps supported refuge categories', () => {
 
   assert.equal(result.valid, true);
   assert.equal(result.cleaned.type, 'indoor');
+  assert.equal(result.cleaned.source_key, 'refuge:indoor:city library');
+});
+
+test('cleaning rejects partially numeric coordinates and counts', () => {
+  const sensor = cleanSensorRecord({
+    location_id: 42,
+    sensor_description: 'Test Sensor',
+    latitude: '-37.81abc',
+    longitude: '144.96',
+  });
+  const reading = cleanReadingRecord({
+    location_id: 42,
+    sensing_datetime: '2026-08-09T01:00:00Z',
+    total_of_directions: '12.5',
+  });
+
+  assert.equal(sensor.valid, false);
+  assert.ok(sensor.issues.includes('latitude not numeric'));
+  assert.equal(reading.valid, false);
+  assert.ok(reading.issues.includes('count not numeric'));
 });
