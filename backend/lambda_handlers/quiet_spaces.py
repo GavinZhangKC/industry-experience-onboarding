@@ -52,15 +52,10 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
             event.get("queryStringParameters") or {}
         )
         settings = get_settings()
-        radius_m = (
-            query.radius_m
-            if query.radius_m is not None
-            else settings.default_radius_metres
-        )
         result = find_quiet_spaces(
             query.lat,
             query.lng,
-            radius_m=radius_m,
+            radius_m=query.radius_m,
             limit=query.limit,
             category=query.category,
             store=get_configured_data_store(settings),

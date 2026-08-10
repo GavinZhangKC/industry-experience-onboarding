@@ -29,7 +29,7 @@ def _event(
     }
 
 
-def _quiet_response(radius_m: int = 800) -> QuietSpaceResponse:
+def _quiet_response(radius_m: int = 500) -> QuietSpaceResponse:
     return QuietSpaceResponse(
         quiet_spaces=[
             QuietSpace(
@@ -85,7 +85,7 @@ def test_quiet_space_handler_returns_function_url_response(monkeypatch):
     assert captured == {
         "lat": -37.814,
         "lng": 144.97,
-        "radius_m": 800,
+        "radius_m": 500,
         "limit": 5,
         "category": None,
         "store": store,

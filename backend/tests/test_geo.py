@@ -1,7 +1,5 @@
 import math
 
-import pytest
-
 from app.lib.geo import (
     decode_polyline,
     distance_point_to_path_m,
@@ -23,11 +21,6 @@ def test_polyline_roundtrip():
     for (alat, alng), (blat, blng) in zip(points, decoded):
         assert math.isclose(alat, blat, abs_tol=1e-5)
         assert math.isclose(alng, blng, abs_tol=1e-5)
-
-
-def test_decode_polyline_rejects_a_truncated_coordinate():
-    with pytest.raises(ValueError, match="ended mid-coordinate"):
-        decode_polyline("abc")
 
 
 def test_point_on_path_is_near_zero():

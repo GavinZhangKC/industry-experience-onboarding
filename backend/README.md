@@ -87,10 +87,8 @@ It preserves the existing paths and dispatches them to thin endpoint adapters:
 
 | Method and path | Adapter | Service flow |
 |---|---|---|
-| `GET /health` | `lambda_handlers.health.handler` | provider and reference-data status |
 | `POST /api/v1/routes` | `lambda_handlers.routes.handler` | `plan_routes()` → `score_route()` |
 | `GET /api/v1/quiet-spaces` | `lambda_handlers.quiet_spaces.handler` | `find_quiet_spaces()` |
-| `POST /api/v1/refuge-detour` | `lambda_handlers.refuge_detour.handler` | `plan_refuge_detour()` |
 
 The endpoint adapters can also be configured as separate Lambda entry points
 if the deployment later adds a routing layer in front of multiple Function

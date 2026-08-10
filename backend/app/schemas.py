@@ -87,9 +87,7 @@ class QuietSpaceQuery(BaseModel):
 
     lat: float = Field(..., ge=-90.0, le=90.0)
     lng: float = Field(..., ge=-180.0, le=180.0)
-    # Keep this optional so each HTTP adapter can apply Settings' configured
-    # default, rather than baking a second default into its transport model.
-    radius_m: int | None = Field(None, ge=100, le=5000)
+    radius_m: int = Field(500, ge=100, le=5000)
     limit: int = Field(5, ge=1, le=20)
     category: RefugeCategory | None = None
 
