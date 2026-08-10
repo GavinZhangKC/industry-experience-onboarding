@@ -12,7 +12,12 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
         ...init?.headers,
       },
     });
-  } catch {
+  } catch (error) {
+    // Cancellation is intentional when a user starts another search or leaves
+    // a panel. Preserve it so hooks can avoid showing a false error state.
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw error;
+    }
     // Network failure: the backend never returns this shape for a request
     // that reached it, so it's synthesized here to keep the caller's error
     // handling uniform.
@@ -43,10 +48,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-export function apiGet<T>(path: string): Promise<T> {
-  return request<T>(path, { method: "GET" });
+export function apiGet<T>(path: string, init?: RequestInit): Promise<T> {
+  return request<T>(path, { ...init, method: "GET" });
 }
 
-export function apiPost<T>(path: string, body: unknown): Promise<T> {
-  return request<T>(path, { method: "POST", body: JSON.stringify(body) });
+export function apiPost<T>(path: string, body: unknown, init?: RequestInit): Promise<T> {
+  return request<T>(path, { ...init, method: "POST", body: JSON.stringify(body) });
 }
