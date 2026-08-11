@@ -185,12 +185,26 @@ function App() {
       error={quietSpaces.error}
       locationNote={quietSpaceLocationNote}
       selectedSpaceId={selectedQuietSpaceId}
-      onSelectSpace={handleSelectQuietSpace}
-      onBackFromDetail={() => setSelectedQuietSpaceId(null)}
-      onClose={handleCloseQuietSpacePanel}
-      canExpand={quietSpaces.canExpand}
+      category={quietSpaces.category}
+      onCategoryChange={
+        quietSpaces.changeCategory
+      }
+      onSelectSpace={
+        handleSelectQuietSpace
+      }
+      onBackFromDetail={() =>
+        setSelectedQuietSpaceId(null)
+      }
+      onClose={
+        handleCloseQuietSpacePanel
+      }
+      canExpand={
+        quietSpaces.canExpand
+      }
       nextRadiusM={nextRadiusM}
-      onExpandRadius={quietSpaces.expandRadius}
+      onExpandRadius={
+        quietSpaces.expandRadius
+      }
     />
   ) : primaryView === "routes" && routes.routes ? (
     <RouteComparisonPanel

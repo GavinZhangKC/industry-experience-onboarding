@@ -24,9 +24,18 @@ export function QuietSpaceMarkers({
       {searchCenter && radiusM && (
         <>
           <Circle
-            center={[searchCenter.lat, searchCenter.lng]}
+            center={[
+              searchCenter.lat,
+              searchCenter.lng,
+            ]}
             radius={radiusM}
-            pathOptions={{ color: "#2f6b63", weight: 1, opacity: 0.5, fillOpacity: 0.05 }}
+            pathOptions={{
+              color: "#174f9e",
+              weight: 3,
+              opacity: 0.9,
+              fillColor: "#5b8fd6",
+              fillOpacity: 0.16,
+            }}
           />
           <CircleMarker
             center={[searchCenter.lat, searchCenter.lng]}

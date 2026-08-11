@@ -8,6 +8,10 @@ export interface Coordinate {
 
 export type SensoryLevel = "low" | "medium" | "high";
 
+export type RefugeCategory =
+  | "green_space"
+  | "indoor";
+
 export interface SensoryFactor {
   name: string;
   type: string;
@@ -46,9 +50,11 @@ export interface QuietSpace {
   id: string;
   name: string;
   type: string;
+  category: RefugeCategory;
   lat: number;
   lng: number;
   distance_m: number;
+  description: string;
 }
 
 export interface QuietSpaceResponse {
