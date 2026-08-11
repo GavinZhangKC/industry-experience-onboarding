@@ -189,14 +189,14 @@
 
   width: 420px;
   max-width: calc(100% - 32px);
-  height: 110px;
+  height: 76px;
 
   background: linear-gradient(
     to bottom,
     rgba(255, 255, 255, 1) 0%,
-    rgba(255, 255, 255, 1) 42%,
-    rgba(255, 255, 255, 0.92) 62%,
-    rgba(255, 255, 255, 0.55) 80%,
+    rgba(255, 255, 255, 1) 37%,
+    rgba(255, 255, 255, 0.92) 52%,
+    rgba(255, 255, 255, 0.55) 70%,
     rgba(255, 255, 255, 0) 100%
   );
 
@@ -212,7 +212,9 @@
     inset: 0;
 
     overflow-y: auto;
-    padding-top: 130px;
+    .sidePanel {
+      padding-top: 88px;
+    }
 
     border: 1px solid rgba(255, 255, 255, 0.82);
     border-radius: 22px;
@@ -225,12 +227,13 @@
     transform-origin: top left;
   }
 
-  .sidePanelTopFade {
+.sidePanelTopFade {
   top: 0;
   left: 0;
 
   width: 100%;
   max-width: 100%;
+  height: 76px;
 
   border-radius: 22px 22px 0 0;
 }

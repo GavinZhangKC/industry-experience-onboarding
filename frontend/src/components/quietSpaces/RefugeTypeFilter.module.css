@@ -1,0 +1,164 @@
+.field {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  color: #24364b;
+
+  font-family: "Fira Sans", Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.selectControl {
+  position: relative;
+  z-index: 10;
+
+  min-height: 54px;
+
+  border: 1px solid #d5d7dc;
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 4px 12px
+    rgba(25, 31, 45, 0.16);
+}
+
+.selectControl:focus-within {
+  border-color: #174f9e;
+
+  box-shadow:
+    0 0 0 3px rgba(23, 79, 158, 0.16),
+    0 4px 12px rgba(25, 31, 45, 0.12);
+}
+
+.selectButton {
+  width: 100%;
+  min-height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 0 14px 0 16px;
+
+  color: #24364b;
+  background: #ffffff;
+
+  border: 0;
+  border-radius: 9px;
+
+  font-family: "Fira Sans", Arial, sans-serif;
+  font-size: 1rem;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.selectButton:hover:not(:disabled) {
+  color: #174f9e;
+  background: #f7faff;
+}
+
+.selectButton:focus {
+  outline: none;
+}
+
+.selectButton:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.chevron {
+  color: #174f9e;
+
+  font-size: 0.95rem;
+
+  transition:
+    transform 160ms ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.optionList {
+  position: absolute;
+  z-index: 100;
+
+  top: calc(100% + 7px);
+  left: 0;
+
+  width: 100%;
+  margin: 0;
+  padding: 6px;
+
+  list-style: none;
+
+  background: #ffffff;
+
+  border: 1px solid #9ebbe2;
+  border-radius: 12px;
+
+  box-shadow:
+    0 14px 30px rgba(23, 52, 95, 0.18),
+    0 3px 8px rgba(23, 52, 95, 0.1);
+}
+
+.option {
+  min-height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 9px 12px;
+
+  color: #24364b;
+  background: #ffffff;
+
+  border-radius: 8px;
+
+  font-family: "Fira Sans", Arial, sans-serif;
+  font-size: 0.98rem;
+
+  cursor: pointer;
+
+  transition:
+    color 120ms ease,
+    background-color 120ms ease;
+}
+
+.option:hover,
+.optionActive {
+  color: #174f9e;
+  background: #e8f1ff;
+}
+
+.optionSelected {
+  color: #103f82;
+  background: #dbe9ff;
+
+  font-weight: 600;
+}
+
+.optionSelected:hover,
+.optionSelected.optionActive {
+  color: #103f82;
+  background: #dbe9ff;
+}
+
+.optionCheck {
+  color: #174f9e;
+
+  font-size: 1rem;
+  font-weight: 700;
+}

@@ -1,16 +1,37 @@
 .banner {
   display: flex;
-  gap: var(--space-2);
   align-items: flex-start;
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-surface-muted);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  gap: 14px;
+
+  padding: 16px 18px;
+
+  color: #24364b;
+  background: #e8f1ff;
+
+  border: 1px solid #9ebbe2;
+  border-radius: 12px;
+
+  font-family: "Fira Sans", Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .icon {
   flex-shrink: 0;
+
+  color: #174f9e;
+
   font-weight: 700;
-  color: var(--color-accent);
+}
+
+.quietSpace {
+  color: #24364b;
+  background: #e8f1ff;
+
+  border: 1px solid #9ebbe2;
+  border-radius: 12px;
+}
+
+.quietSpace .icon {
+  color: #174f9e;
 }
