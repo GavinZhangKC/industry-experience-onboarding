@@ -86,7 +86,7 @@ export function AppShell({
 
           <div className={styles.brandText}>
             <h1 className={styles.headerTitle}>
-              Sensory-Aware Route Planner
+              SENSORY
             </h1>
 
             <p className={styles.headerSubtitle}>
