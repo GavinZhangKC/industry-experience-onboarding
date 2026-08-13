@@ -19,7 +19,6 @@ import { usePredictiveAlerts } from "./hooks/usePredictiveAlerts";
 import { SelectedRouteSummary } from "./components/routes/SelectedRouteSummary";
 import { RouteNavigation } from "./components/routes/RouteNavigation";
 import { CurrentStepMarker } from "./components/map/CurrentStepMarker";
-import { LandingPage } from "./components/landing/LandingPage";
 import {
   isWithinQuietSpaceServiceArea,
   QUIET_SPACE_CBD_CENTER,
@@ -31,7 +30,6 @@ import {
 const CROWD_AVOIDANCE_THRESHOLD = 66;
 
 type PrimaryView = "input" | "routes";
-type AppStage = "landing" | "planner";
 
 interface PlannerAppProps {
   onBackToLanding: () => void;
@@ -307,10 +305,6 @@ function PlannerApp({
   routes.routes?.find(
     (route) => route.id === selectedRouteId
   ) ?? null;
-
-  if (appStage === "landing") {
-    return <LandingPage onGetStarted={() => setAppStage("planner")} />;
-  }
 
   return (
       <AppShell

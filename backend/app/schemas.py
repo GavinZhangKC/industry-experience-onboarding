@@ -82,7 +82,7 @@ class RouteOption(BaseModel):
     # Turn-by-turn navigation steps. Empty list, not None, when a provider
     # returns none — RouteCard/navigation UI can treat [] as "no steps to
     # show" without a separate null check.
-    steps: list[RouteStep] = []
+    steps: list[RouteStep] = Field(default_factory=list)
 
 
 class RouteResponse(BaseModel):
