@@ -27,6 +27,8 @@
   background: rgba(255, 255, 255, 0.94);
   box-shadow: 0 8px 28px rgba(25, 31, 45, 0.14);
   backdrop-filter: blur(12px);
+
+  pointer-events: auto;
 }
 
 .headerTitle,
@@ -34,7 +36,40 @@
   white-space: nowrap;
 }
 
+.headerTitle {
+  margin: 0;
+
+  color: #174f9e;
+
+  font-family: "Train One", sans-serif;
+  font-size: clamp(1.45rem, 2vw, 1.75rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.headerSubtitle {
+  margin: 5px 0 0;
+
+  color: #526783;
+
+  font-family: "Manrope", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+}
+
 .brandMark {
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+
+  transition:
+  transform 160ms ease,
+  box-shadow 160ms ease,
+  filter 160ms ease;
+
   width: 46px;
   height: 46px;
   flex: 0 0 46px;
@@ -45,8 +80,19 @@
 
   color: #ffffff;
   background: #5367ff;
+
   border-radius: 13px;
   box-shadow: 0 6px 14px rgba(83, 103, 255, 0.25);
+}
+
+.brandMark:hover {
+  filter: brightness(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 9px 20px rgba(83, 103, 255, 0.32);
+}
+
+.brandMark:active {
+  transform: translateY(0) scale(0.97);
 }
 
 .brandMark svg {
@@ -59,35 +105,10 @@
   font-family: "Fira Sans", Arial, sans-serif;
 }
 
-.headerTitle {
-  margin: 0;
-
-  color: #174f9e;
-
-  font-family: "Fira Sans", Arial, sans-serif;
-  font-size: clamp(1.35rem, 2vw, 1.65rem);
-  font-weight: 700;
-  line-height: 1.1;
-
-  letter-spacing: -0.015em;
-}
-
-.headerSubtitle {
-  margin: 4px 0 0;
-
-  color: #526783;
-
-  font-family: "Fira Sans", Arial, sans-serif;
-  font-size: 0.95rem;
-  font-weight: 400;
-  line-height: 1.35;
-
-  letter-spacing: 0.005em;
-}
-
 .body {
   position: relative;
   flex: 1;
+
   min-height: 0;
   overflow: hidden;
 }
@@ -98,6 +119,7 @@
 }
 
 /* Leaflet zoom controls */
+
 .mapArea :global(.leaflet-control-zoom.leaflet-bar) {
   display: flex;
   flex-direction: column;
@@ -112,6 +134,7 @@
 .mapArea :global(.leaflet-control-zoom-out) {
   width: 42px;
   height: 42px;
+
   line-height: 39px;
 
   color: #174f9e;
@@ -158,94 +181,146 @@
   pointer-events: auto;
 }
 
+/* Floating layout */
+
+.floatingLayer {
+  --panel-indent: 24px;
+  --panel-width: 560px;
+
+  position: absolute;
+  z-index: 1000;
+
+  top: 16px;
+  right: 24px;
+  bottom: 16px;
+  left: 24px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  pointer-events: none;
+}
+
+.panelArea {
+  position: relative;
+
+  flex: 1;
+  min-height: 0;
+
+  width: min(
+    var(--panel-width),
+    calc(100vw - 48px)
+  );
+
+  pointer-events: none;
+  transform: translateX(16px);
+}
+
+/* Planner panel */
+
 .sidePanel {
   position: absolute;
   z-index: 900;
 
-  top: 16px;
+  top: 0;
+  right: 0;
   bottom: 16px;
-  left: 16px;
+  left: 0;
 
-  width: 420px;
-  max-width: calc(100% - 32px);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 
-  padding-top: 64px;
+  padding-top: 88px;
+
+  overflow-x: hidden;
   overflow-y: auto;
 
-  border: 1px solid var(--color-border);
-  border-radius: 20px;
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.97);
 
-  background: var(--color-surface);
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 22px;
 
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 20px 48px rgba(25, 31, 45, 0.2);
+  backdrop-filter: blur(14px);
+
+  pointer-events: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: #9a9a9a transparent;
+  scrollbar-gutter: stable;
 }
+
+/* Chrome, Edge and Safari scrollbar */
+
+.sidePanel::-webkit-scrollbar {
+  width: 10px;
+}
+
+.sidePanel::-webkit-scrollbar-button {
+  display: none;
+
+  width: 0;
+  height: 0;
+}
+
+.sidePanel::-webkit-scrollbar-track {
+  margin: 16px 0;
+  background: transparent;
+}
+
+.sidePanel::-webkit-scrollbar-thumb {
+  min-height: 50px;
+
+  background: #9a9a9a;
+  background-clip: content-box;
+
+  border: 3px solid transparent;
+  border-radius: 999px;
+}
+
+.sidePanel::-webkit-scrollbar-thumb:hover {
+  background: #737373;
+  background-clip: content-box;
+}
+
+/*
+ * Top white gradient.
+ * It ends 10px before the right edge so that it does not cover
+ * the scrollbar. The gradient matches InformationPanel.
+ */
 
 .sidePanelTopFade {
   position: absolute;
   z-index: 940;
 
-  top: 16px;
-  left: 16px;
+  top: 0;
+  right: 10px;
+  left: 0;
 
-  width: 420px;
-  max-width: calc(100% - 32px);
-  height: 76px;
+  width: auto;
+  height: 100px;
 
   background: linear-gradient(
     to bottom,
     rgba(255, 255, 255, 1) 0%,
-    rgba(255, 255, 255, 1) 37%,
-    rgba(255, 255, 255, 0.92) 52%,
-    rgba(255, 255, 255, 0.55) 70%,
+    rgba(255, 255, 255, 1) 48%,
+    rgba(255, 255, 255, 0.88) 68%,
     rgba(255, 255, 255, 0) 100%
   );
 
-  border-radius: 20px 20px 0 0;
+  border-radius: 22px 22px 0 0;
 
   pointer-events: none;
 }
 
-@media (max-width: 760px) {
-  .sidePanel {
-    position: absolute;
-    z-index: 800;
-    inset: 0;
-
-    overflow-y: auto;
-    .sidePanel {
-      padding-top: 88px;
-    }
-
-    border: 1px solid rgba(255, 255, 255, 0.82);
-    border-radius: 22px;
-
-    background: rgba(255, 255, 255, 0.97);
-    box-shadow: 0 20px 48px rgba(25, 31, 45, 0.2);
-    backdrop-filter: blur(14px);
-
-    pointer-events: auto;
-    transform-origin: top left;
-  }
-
-.sidePanelTopFade {
-  top: 0;
-  left: 0;
-
-  width: 100%;
-  max-width: 100%;
-  height: 76px;
-
-  border-radius: 22px 22px 0 0;
+.sidePanelClosed {
+  display: none;
 }
 
-  .menuButton {
-    top: 24px;
-    left: 24px;
-
-    width: 44px;
-    height: 44px;
-  }
-}
+/* Planner menu button */
 
 .menuButton {
   position: absolute;
@@ -301,7 +376,6 @@
   background: #e8f1ff;
 
   border-color: rgba(23, 79, 158, 0.28);
-  border-radius: 50%;
 
   box-shadow: 0 7px 18px rgba(23, 79, 158, 0.18);
   transform: translateY(-1px);
@@ -312,8 +386,6 @@
   background: transparent;
 
   border-color: transparent;
-  border-radius: 50%;
-
   box-shadow: none;
 }
 
@@ -322,42 +394,12 @@
   background: #e8f1ff;
 
   border-color: transparent;
-  border-radius: 50%;
-
   box-shadow: none;
+
   transform: none;
 }
 
-.sidePanelClosed {
-  display: none;
-}
-
-.floatingLayer {
-  --panel-indent: 24px;
-
-  position: absolute;
-  z-index: 1000;
-  top: 16px;
-  right: 24px;
-  bottom: 16px;
-  left: 24px;
-
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-
-  pointer-events: none;
-}
-
-.panelArea {
-  position: relative;
-  flex: 1;
-  min-height: 0;
-
-  width: min(620px, calc(100vw - 48px));
-
-  pointer-events: auto;
-}
+/* Information button */
 
 .infoButton {
   position: absolute;
@@ -394,14 +436,16 @@
   transition:
     color 160ms ease,
     background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
     transform 160ms ease;
 }
 
 .infoButton:hover {
   color: #174f9e;
   background: #e8f1ff;
+
   border-color: rgba(23, 79, 158, 0.28);
-  border-radius: 50%;
 
   box-shadow: 0 7px 18px rgba(23, 79, 158, 0.18);
   transform: translateY(-1px);
@@ -417,6 +461,8 @@
   background: #1c4fa0;
 }
 
+/* Information panel */
+
 .informationOverlay {
   position: absolute;
   z-index: 1000;
@@ -424,7 +470,7 @@
   top: 76px;
   right: 0;
   bottom: 0;
-  left: 18px;
+  left: 0;
 
   min-height: 0;
 
@@ -443,5 +489,72 @@
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+/* Mobile layout */
+
+@media (max-width: 760px) {
+  .floatingLayer {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+
+  .panelArea {
+    width: 100%;
+    transform: none;
+  }
+
+  .sidePanel {
+    position: absolute;
+    z-index: 800;
+
+    inset: 0;
+
+    width: 100%;
+    max-width: 100%;
+
+    padding-top: 88px;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    border: 1px solid rgba(255, 255, 255, 0.82);
+    border-radius: 22px;
+
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: 0 20px 48px rgba(25, 31, 45, 0.2);
+    backdrop-filter: blur(14px);
+
+    pointer-events: auto;
+    transform-origin: top left;
+  }
+
+  .sidePanelTopFade {
+    top: 0;
+    right: 10px;
+    left: 0;
+
+    width: auto;
+    height: 100px;
+
+    border-radius: 22px 22px 0 0;
+  }
+
+  .menuButton {
+    top: 24px;
+    left: 24px;
+
+    width: 44px;
+    height: 44px;
+  }
+
+  .informationOverlay {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
   }
 }

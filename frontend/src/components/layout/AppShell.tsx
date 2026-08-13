@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from "react";
+import { LogoMark } from "../brand/LogoMark";
 import { InformationPanel } from "./InformationPanel";
 import styles from "./AppShell.module.css";
 
@@ -6,35 +7,24 @@ interface AppShellProps {
   map: ReactNode;
   mapOverlay?: ReactNode;
   sidePanel: ReactNode;
+  onBackToLanding: () => void;
 }
 
-function BrandMark() {
+interface BrandMarkProps {
+  onClick: () => void;
+}
+
+function BrandMark({ onClick }: BrandMarkProps) {
   return (
-    <div className={styles.brandMark} aria-hidden="true">
-      <svg viewBox="0 0 40 40">
-        <path
-          d="M11 29C11 22 16 23 16 17C16 13.5 18.5 11 22 11C26 11 29 14 29 18C29 24 23 25 23 30"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-
-        <circle
-          cx="11"
-          cy="29"
-          r="3"
-          fill="currentColor"
-        />
-
-        <circle
-          cx="29"
-          cy="18"
-          r="3"
-          fill="currentColor"
-        />
-      </svg>
-    </div>
+    <button
+      type="button"
+      className={styles.brandMark}
+      onClick={onClick}
+      aria-label="Return to Synora landing page"
+      title="Return to landing page"
+    >
+      <LogoMark />
+    </button>
   );
 }
 
@@ -42,6 +32,7 @@ export function AppShell({
   map,
   mapOverlay,
   sidePanel,
+  onBackToLanding,
 }: AppShellProps) {
   const [panelOpen, setPanelOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
@@ -72,6 +63,7 @@ export function AppShell({
       <div className={styles.body}>
         <div className={styles.mapArea}>
           {map}
+
           {mapOverlay && (
             <div className={styles.mapOverlay}>
               {mapOverlay}
@@ -82,7 +74,7 @@ export function AppShell({
 
       <div className={styles.floatingLayer}>
         <header className={styles.header}>
-          <BrandMark />
+          <BrandMark onClick={onBackToLanding} />
 
           <div className={styles.brandText}>
             <h1 className={styles.headerTitle}>
