@@ -8,18 +8,30 @@ import { OriginDestinationMarkers } from "./components/map/OriginDestinationMark
 import { RoutePolylines } from "./components/map/RoutePolylines";
 import { QuietSpaceMarkers } from "./components/map/QuietSpaceMarkers";
 import { JourneyInputPanel, type PickingField } from "./components/journey/JourneyInputPanel";
+import { PredictiveAlerts } from "./components/journey/PredictiveAlerts";
+import { DEFAULT_PREFERENCES, type PreferenceState } from "./constants/preferences";
 import { RouteComparisonPanel } from "./components/routes/RouteComparisonPanel";
 import { FindQuietSpaceButton } from "./components/quietSpaces/FindQuietSpaceButton";
 import { QuietSpaceResultsPanel } from "./components/quietSpaces/QuietSpaceResultsPanel";
 import { useRoutes } from "./hooks/useRoutes";
 import { useQuietSpaces, RADIUS_STEPS_M } from "./hooks/useQuietSpaces";
+import { usePredictiveAlerts } from "./hooks/usePredictiveAlerts";
 import { SelectedRouteSummary } from "./components/routes/SelectedRouteSummary";
+import { RouteNavigation } from "./components/routes/RouteNavigation";
+import { CurrentStepMarker } from "./components/map/CurrentStepMarker";
+import { LandingPage } from "./components/landing/LandingPage";
 import {
   isWithinQuietSpaceServiceArea,
   QUIET_SPACE_CBD_CENTER,
 } from "./lib/quietSpaceServiceArea";
 
+// US 1.3: "avoid crowded areas" maps to the Medium/High boundary — turning
+// it off removes the cap entirely rather than mapping to some other number,
+// since there's no UI for a finer-grained numeric threshold yet.
+const CROWD_AVOIDANCE_THRESHOLD = 66;
+
 type PrimaryView = "input" | "routes";
+type AppStage = "landing" | "planner";
 
 interface PlannerAppProps {
   onBackToLanding: () => void;
@@ -36,6 +48,8 @@ function PlannerApp({
 
   const [primaryView, setPrimaryView] = useState<PrimaryView>("input");
   const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
+  const [navigationActive, setNavigationActive] = useState(false);
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
   const [panTarget, setPanTarget] = useState<Coordinate | null>(null);
   const [panTargetKey, setPanTargetKey] = useState(0);
@@ -48,6 +62,15 @@ function PlannerApp({
 
   const routes = useRoutes();
   const quietSpaces = useQuietSpaces();
+  const predictiveAlerts = usePredictiveAlerts();
+  const [preferences, setPreferences] = useState<PreferenceState>(DEFAULT_PREFERENCES);
+
+  // US 2.2: fetched once on load — "users receive... alerts", a passive
+  // signal, not a lookup tool behind a button.
+  useEffect(() => {
+    predictiveAlerts.fetchAlerts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Switches to the comparison view only once a search actually succeeds,
   // instead of racing the async call in the click handler.
@@ -136,13 +159,44 @@ function PlannerApp({
 
   function handleSearchRoutes() {
     if (!origin || !destination) return;
-    routes.search(origin, destination);
+    const sensitivityThreshold = preferences.avoidCrowds ? CROWD_AVOIDANCE_THRESHOLD : undefined;
+    routes.search(origin, destination, sensitivityThreshold);
   }
 
   function handleNewSearch() {
     setPrimaryView("input");
     routes.reset();
     setSelectedRouteId(null);
+    setNavigationActive(false);
+    setCurrentStepIndex(0);
+  }
+
+  function handleSelectRoute(routeId: string) {
+    setSelectedRouteId(routeId);
+    // Selecting a different route while mid-navigation should re-start
+    // navigation from that route's first step, not carry over an index that
+    // may not even exist on the new route.
+    setNavigationActive(false);
+    setCurrentStepIndex(0);
+  }
+
+  function handleStartNavigation() {
+    setNavigationActive(true);
+    setCurrentStepIndex(0);
+  }
+
+  function handleExitNavigation() {
+    setNavigationActive(false);
+    setCurrentStepIndex(0);
+  }
+
+  function handleNextStep() {
+    if (!selectedRoute) return;
+    setCurrentStepIndex((index) => Math.min(index + 1, selectedRoute.steps.length - 1));
+  }
+
+  function handlePreviousStep() {
+    setCurrentStepIndex((index) => Math.max(index - 1, 0));
   }
 
   function handleFindQuietSpace(center: Coordinate, note: string | null) {
@@ -217,11 +271,13 @@ function PlannerApp({
     <RouteComparisonPanel
       routes={routes.routes}
       selectedRouteId={selectedRouteId}
-      onSelectRoute={setSelectedRouteId}
+      onSelectRoute={handleSelectRoute}
       onNewSearch={handleNewSearch}
+      allRoutesExceedThreshold={routes.allRoutesExceedThreshold}
     />
   ) : (
     <>
+      <PredictiveAlerts alerts={predictiveAlerts.alerts} />
       <JourneyInputPanel
         origin={origin}
         destination={destination}
@@ -241,6 +297,8 @@ function PlannerApp({
         }
         loading={routes.loading}
         error={routes.error}
+        preferences={preferences}
+        onPreferencesChange={setPreferences}
       />
     </>
   );
@@ -250,6 +308,10 @@ function PlannerApp({
     (route) => route.id === selectedRouteId
   ) ?? null;
 
+  if (appStage === "landing") {
+    return <LandingPage onGetStarted={() => setAppStage("planner")} />;
+  }
+
   return (
       <AppShell
         onBackToLanding={onBackToLanding}
@@ -257,7 +319,14 @@ function PlannerApp({
         <MapView onMapClick={handleMapClick} panTarget={panTarget} panTargetKey={panTargetKey}>
           <OriginDestinationMarkers origin={origin} destination={destination} />
           {primaryView === "routes" && routes.routes && (
-            <RoutePolylines routes={routes.routes} selectedRouteId={selectedRouteId} onSelectRoute={setSelectedRouteId} />
+            <RoutePolylines
+              routes={routes.routes}
+              selectedRouteId={selectedRouteId}
+              onSelectRoute={navigationActive ? () => {} : handleSelectRoute}
+            />
+          )}
+          {navigationActive && selectedRoute && selectedRoute.steps[currentStepIndex] && (
+            <CurrentStepMarker step={selectedRoute.steps[currentStepIndex]} />
           )}
           {quietSpacePanelOpen && quietSpaces.center && (
             <QuietSpaceMarkers
@@ -273,10 +342,21 @@ function PlannerApp({
       }
       mapOverlay={
         selectedRoute ? (
-          <SelectedRouteSummary
-            route={selectedRoute}
-            onExit={() => setSelectedRouteId(null)}
-          />
+          navigationActive ? (
+            <RouteNavigation
+              route={selectedRoute}
+              currentStepIndex={currentStepIndex}
+              onNextStep={handleNextStep}
+              onPreviousStep={handlePreviousStep}
+              onExit={handleExitNavigation}
+            />
+          ) : (
+            <SelectedRouteSummary
+              route={selectedRoute}
+              onExit={() => setSelectedRouteId(null)}
+              onStartNavigation={handleStartNavigation}
+            />
+          )
         ) : null
       }
       sidePanel={sidePanel}

@@ -25,6 +25,12 @@ class RouteRequest(BaseModel):
     origin: Coordinate
     destination: Coordinate
     alternatives: int = Field(3, ge=2, le=5)
+    # US 1.3 — "alternative low-stimulation routes when crowd density exceeds
+    # my preferred threshold". None means no preference filtering at all
+    # (today's behaviour, unchanged for existing callers). Uses the same
+    # 0-100 score scale as SensoryResult.score, so a caller can reasonably
+    # pass settings.medium_threshold if they want "warn me above Medium".
+    sensitivity_threshold: int | None = Field(None, ge=0, le=100)
 
     @model_validator(mode="after")
     def _origin_differs_from_destination(self):
@@ -54,6 +60,13 @@ class SensoryResult(BaseModel):
     factors: list[SensoryFactor]
 
 
+class RouteStep(BaseModel):
+    instruction: str
+    distance_m: int
+    duration_s: int
+    polyline: str
+
+
 class RouteOption(BaseModel):
     id: str
     label: str
@@ -61,11 +74,26 @@ class RouteOption(BaseModel):
     duration_s: int
     polyline: str
     sensory: SensoryResult
+    # US 1.3 — set only when the request included sensitivity_threshold;
+    # None (not False) when no preference was given, so the frontend can
+    # tell "definitely within your comfort level" apart from "no preference
+    # was expressed at all".
+    exceeds_threshold: bool | None = None
+    # Turn-by-turn navigation steps. Empty list, not None, when a provider
+    # returns none — RouteCard/navigation UI can treat [] as "no steps to
+    # show" without a separate null check.
+    steps: list[RouteStep] = []
 
 
 class RouteResponse(BaseModel):
     routes: list[RouteOption]
     generated_at: str
+    # True only when every returned route exceeds the requested threshold —
+    # the "no fully comfortable route available" case from the DoD ("route
+    # recommendations dynamically adjust when crowd levels exceed
+    # user-defined limits"). The frontend should still show routes (best
+    # available, already sorted calmest-first), just with a clear notice.
+    all_routes_exceed_threshold: bool = False
 
 
 class QuietSpace(BaseModel):
@@ -118,4 +146,22 @@ class RefugeDetourResponse(BaseModel):
     legs: list[RefugeLeg]
     total_distance_m: int
     total_duration_s: int
+    generated_at: str
+
+
+class PredictiveAlert(BaseModel):
+    """US 2.2 — an area whose last 3 readings are strictly rising, not just
+    currently busy. percent_increase compares the latest reading to the one
+    immediately before it."""
+
+    id: str
+    name: str
+    lat: float
+    lng: float
+    percent_increase: float
+    message: str
+
+
+class PredictiveAlertsResponse(BaseModel):
+    alerts: list[PredictiveAlert]
     generated_at: str

@@ -26,6 +26,13 @@ export interface SensoryResult {
   factors: SensoryFactor[];
 }
 
+export interface RouteStep {
+  instruction: string;
+  distance_m: number;
+  duration_s: number;
+  polyline: string;
+}
+
 export interface RouteOption {
   id: string;
   label: string;
@@ -33,16 +40,35 @@ export interface RouteOption {
   duration_s: number;
   polyline: string;
   sensory: SensoryResult;
+  // undefined/null = no threshold was requested — never treat as "false".
+  exceeds_threshold?: boolean | null;
+  steps: RouteStep[];
 }
 
 export interface RouteRequest {
   origin: Coordinate;
   destination: Coordinate;
   alternatives?: number;
+  sensitivity_threshold?: number;
 }
 
 export interface RouteResponse {
   routes: RouteOption[];
+  generated_at: string;
+  all_routes_exceed_threshold?: boolean;
+}
+
+export interface PredictiveAlert {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+  percent_increase: number;
+  message: string;
+}
+
+export interface PredictiveAlertsResponse {
+  alerts: PredictiveAlert[];
   generated_at: string;
 }
 

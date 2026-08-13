@@ -22,8 +22,8 @@ class FakeMapsClient:
         direct = encode_polyline([origin, destination])
         via_point = encode_polyline([origin, (-37.8070, 144.9630), destination])
         return [
-            RawRoute(distance_m=1800, duration_s=1300, polyline=direct),
-            RawRoute(distance_m=2200, duration_s=1600, polyline=via_point),
+            RawRoute(distance_m=1800, duration_s=1300, polyline=direct, steps=[]),
+            RawRoute(distance_m=2200, duration_s=1600, polyline=via_point, steps=[]),
         ][:alternatives]
 
 

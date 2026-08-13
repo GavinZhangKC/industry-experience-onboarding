@@ -35,6 +35,11 @@ export function RouteCard({ route, isSelected, onSelect }: RouteCardProps) {
         </div>
         <SensoryBadge level={route.sensory.level} score={route.sensory.score} />
         <p className={styles.explanation}>{route.sensory.explanation}</p>
+        {route.exceeds_threshold === true && (
+          <p className={styles.thresholdWarning}>
+            Above your comfort preference
+          </p>
+        )}
       </button>
     </li>
   );

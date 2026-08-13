@@ -12,7 +12,7 @@ from app.config import Settings
 from app.errors import NoRoutesFound, OutOfServiceArea
 from app.lib.data_store import ReferenceDataStore
 from app.lib.geo import decode_polyline
-from app.schemas import RouteOption, RouteRequest, RouteResponse
+from app.schemas import RouteOption, RouteRequest, RouteResponse, RouteStep
 from app.services.scoring_service import score_route
 
 ROUTE_LABELS = "ABCDE"
@@ -67,6 +67,15 @@ async def plan_routes(
                     duration_s=raw.duration_s,
                     polyline=raw.polyline,
                     sensory=sensory,
+                    steps=[
+                        RouteStep(
+                            instruction=step.instruction,
+                            distance_m=step.distance_m,
+                            duration_s=step.duration_s,
+                            polyline=step.polyline,
+                        )
+                        for step in raw.steps
+                    ],
                 ),
             )
         )
@@ -76,10 +85,28 @@ async def plan_routes(
     # if the team decides the fastest route should lead.
     scored.sort(key=lambda pair: pair[0])
     routes = []
-    for position, (_, option) in enumerate(scored):
-        routes.append(option.model_copy(update={"label": f"Route {ROUTE_LABELS[position]}"}))
+    for position, (score, option) in enumerate(scored):
+        exceeds = (
+            score > request.sensitivity_threshold
+            if request.sensitivity_threshold is not None
+            else None
+        )
+        routes.append(
+            option.model_copy(
+                update={"label": f"Route {ROUTE_LABELS[position]}", "exceeds_threshold": exceeds}
+            )
+        )
+
+    # Only meaningful when a threshold was actually requested — with no
+    # threshold, exceeds_threshold is None on every route, and this should
+    # read as "not applicable", not "true".
+    all_exceed = (
+        request.sensitivity_threshold is not None
+        and all(r.exceeds_threshold for r in routes)
+    )
 
     return RouteResponse(
         routes=routes,
         generated_at=datetime.now(timezone.utc).isoformat(),
+        all_routes_exceed_threshold=all_exceed,
     )

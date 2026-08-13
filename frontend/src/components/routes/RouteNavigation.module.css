@@ -1,0 +1,132 @@
+.card {
+  width: min(330px, calc(100vw - 48px));
+  padding: 18px;
+
+  color: #24364b;
+  background: rgba(255, 255, 255, 0.97);
+
+  border: 1px solid rgba(23, 79, 158, 0.16);
+  border-radius: 20px;
+
+  box-shadow: 0 14px 34px rgba(24, 52, 91, 0.2);
+  backdrop-filter: blur(12px);
+
+  font-family: "Fira Sans", Arial, sans-serif;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title {
+  color: #17345f;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.exitButton {
+  padding: 6px 14px;
+
+  color: #174f9e;
+  background: #ffffff;
+
+  border: 1px solid #174f9e;
+  border-radius: 999px;
+
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.exitButton:hover {
+  background: #e8f1ff;
+}
+
+.exitButton:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.noSteps {
+  margin: 14px 0 0;
+  color: #526783;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.stepCount {
+  margin: 14px 0 0;
+  color: #6b7c93;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.instruction {
+  margin: 6px 0 0;
+  color: #17345f;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.stepMeta {
+  margin: 6px 0 0;
+  color: #526783;
+  font-size: 0.88rem;
+}
+
+.remaining {
+  margin: 14px 0 0;
+  padding-top: 12px;
+
+  border-top: 1px solid rgba(23, 79, 158, 0.12);
+
+  color: #526783;
+  font-size: 0.85rem;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+
+  margin-top: 16px;
+}
+
+.navButton {
+  flex: 1;
+  padding: 10px 14px;
+
+  color: #ffffff;
+  background: #174f9e;
+
+  border: none;
+  border-radius: 999px;
+
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.navButton:hover:not(:disabled) {
+  background: #123f80;
+}
+
+.navButton:disabled {
+  color: #a7b3c4;
+  background: #e5eaf1;
+  cursor: not-allowed;
+}
+
+.navButton:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}

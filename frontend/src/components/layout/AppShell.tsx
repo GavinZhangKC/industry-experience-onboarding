@@ -34,7 +34,7 @@ export function AppShell({
   sidePanel,
   onBackToLanding,
 }: AppShellProps) {
-  const [panelOpen, setPanelOpen] = useState(false);
+  const [panelOpen, setPanelOpen] = useState(defaultPanelOpen);
   const [infoOpen, setInfoOpen] = useState(false);
 
   function handleTogglePlanner() {

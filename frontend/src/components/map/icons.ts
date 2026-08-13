@@ -61,3 +61,17 @@ export const destinationIcon = L.divIcon({
 });
 export const quietSpaceIcon = pinIcon("Q", "#3e6b9b");
 export const quietSpaceSelectedIcon = pinIcon("Q", "#1c4a75");
+
+// A directional-feeling marker for "you are here, mid-navigation" — deliberately
+// distinct from originIcon (a plain dot) so it doesn't read as "this is the
+// start of the route" once the user has moved past step 1.
+export const navigationPositionIcon = L.divIcon({
+  className: "",
+  html: `<div style="
+      width: 22px; height: 22px; border-radius: 50%;
+      background: #e07a1f; border: 3px solid #ffffff;
+      box-shadow: 0 0 0 3px rgba(224,122,31,0.35), 0 2px 6px rgba(0,0,0,0.3);
+    "></div>`,
+  iconSize: [22, 22],
+  iconAnchor: [11, 11],
+});
