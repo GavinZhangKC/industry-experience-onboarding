@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { Coordinate, QuietSpace } from "./api/types";
 import { MELBOURNE_LANDMARKS } from "./constants/landmarks";
 import { AppShell } from "./components/layout/AppShell";
+import { LandingPage } from "./components/landing/LandingPage";
 import { MapView } from "./components/map/MapView";
 import { OriginDestinationMarkers } from "./components/map/OriginDestinationMarkers";
 import { RoutePolylines } from "./components/map/RoutePolylines";
@@ -20,7 +21,13 @@ import {
 
 type PrimaryView = "input" | "routes";
 
-function App() {
+interface PlannerAppProps {
+  onBackToLanding: () => void;
+}
+
+function PlannerApp({
+  onBackToLanding,
+}: PlannerAppProps) {
   const [origin, setOrigin] = useState<Coordinate | null>(null);
   const [destination, setDestination] = useState<Coordinate | null>(null);
   const [originLandmarkId, setOriginLandmarkId] = useState<string | null>(null);
@@ -244,8 +251,9 @@ function App() {
   ) ?? null;
 
   return (
-    <AppShell
-      map={
+      <AppShell
+        onBackToLanding={onBackToLanding}
+        map={
         <MapView onMapClick={handleMapClick} panTarget={panTarget} panTargetKey={panTargetKey}>
           <OriginDestinationMarkers origin={origin} destination={destination} />
           {primaryView === "routes" && routes.routes && (
@@ -272,6 +280,24 @@ function App() {
         ) : null
       }
       sidePanel={sidePanel}
+    />
+  );
+}
+
+function App() {
+  const [hasEntered, setHasEntered] = useState(false);
+
+  if (!hasEntered) {
+    return (
+      <LandingPage
+        onEnter={() => setHasEntered(true)}
+      />
+    );
+  }
+
+  return (
+    <PlannerApp
+      onBackToLanding={() => setHasEntered(false)}
     />
   );
 }
