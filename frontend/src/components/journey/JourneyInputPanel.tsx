@@ -6,6 +6,7 @@ import { LoadingState } from "../common/LoadingState";
 import { LocationSelect } from "./LocationSelect";
 import styles from "./JourneyInputPanel.module.css";
 import { SensoryPreferences } from "./SensoryPreferences";
+import type { PreferenceState } from "../../constants/preferences";
 
 export type PickingField = "origin" | "destination" | null;
 
@@ -23,6 +24,8 @@ interface JourneyInputPanelProps {
   quietSpaceAction: ReactNode;
   loading: boolean;
   error: ApiError | null;
+  preferences: PreferenceState;
+  onPreferencesChange: (preferences: PreferenceState) => void;
 }
 
 export function JourneyInputPanel({
@@ -38,6 +41,8 @@ export function JourneyInputPanel({
   quietSpaceAction,
   loading,
   error,
+  preferences,
+  onPreferencesChange,
 }: JourneyInputPanelProps) {
   const canSearch = origin !== null && destination !== null && !loading;
 
@@ -93,7 +98,7 @@ export function JourneyInputPanel({
       {loading && <LoadingState label="Looking for calm routes…" />}
       {error && <ErrorBanner message={error.message} />}
 
-      <SensoryPreferences />
+      <SensoryPreferences preferences={preferences} onChange={onPreferencesChange} />
       <div className={styles.quietSpaceAction}>
         {quietSpaceAction}
       </div>

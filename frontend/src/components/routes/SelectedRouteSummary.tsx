@@ -5,6 +5,7 @@ import styles from "./SelectedRouteSummary.module.css";
 interface SelectedRouteSummaryProps {
   route: RouteOption;
   onExit: () => void;
+  onStartNavigation: () => void;
 }
 
 function formatDuration(seconds: number) {
@@ -22,6 +23,7 @@ function formatDistance(metres: number) {
 export function SelectedRouteSummary({
   route,
   onExit,
+  onStartNavigation,
 }: SelectedRouteSummaryProps) {
   const presentation =
     SENSORY_LEVEL_PRESENTATION[route.sensory.level];
@@ -63,13 +65,22 @@ export function SelectedRouteSummary({
         {route.sensory.explanation}
       </p>
 
-      <button
-        type="button"
-        className={styles.exitButton}
-        onClick={onExit}
-      >
-        Exit route
-      </button>
+      <div className={styles.actionsRow}>
+        <button
+          type="button"
+          className={styles.navigateButton}
+          onClick={onStartNavigation}
+        >
+          Start navigation
+        </button>
+        <button
+          type="button"
+          className={styles.exitButton}
+          onClick={onExit}
+        >
+          Exit route
+        </button>
+      </div>
     </aside>
   );
 }

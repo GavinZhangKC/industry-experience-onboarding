@@ -29,6 +29,15 @@ class ReferenceDataStore(Protocol):
     @property
     def quiet_spaces(self) -> list[dict]: ...
 
+    @property
+    def trending_areas(self) -> list[dict]:
+        """Areas whose last 3 readings are strictly increasing — a genuine
+        upward trend, not just "currently busy". Backs US 2.2's predictive
+        alerts. Optional: implementations may return [] rather than raise,
+        since a lack of trend data shouldn't break routing or quiet-space
+        search, which don't depend on this."""
+        ...
+
 
 def _load(path: Path, extra_required: tuple[str, ...] = ()) -> list[dict]:
     if not path.exists():
@@ -56,6 +65,7 @@ class DataStore:
         self.data_dir = Path(data_dir)
         self._busy_areas: list[dict] | None = None
         self._quiet_spaces: list[dict] | None = None
+        self._trending_areas: list[dict] | None = None
 
     @property
     def busy_areas(self) -> list[dict]:
@@ -71,9 +81,21 @@ class DataStore:
             logger.info("Loaded %d quiet spaces", len(self._quiet_spaces))
         return self._quiet_spaces
 
+    @property
+    def trending_areas(self) -> list[dict]:
+        # Optional file — mock mode works fine with no predictive alerts at
+        # all (an empty list), since this feature depends on real historical
+        # data that a static JSON fixture can't meaningfully simulate.
+        if self._trending_areas is None:
+            path = self.data_dir / "trending_areas.json"
+            self._trending_areas = _load(path, ("latest", "prev", "percent_increase")) if path.exists() else []
+            logger.info("Loaded %d trending areas", len(self._trending_areas))
+        return self._trending_areas
+
     def reload(self) -> None:
         self._busy_areas = None
         self._quiet_spaces = None
+        self._trending_areas = None
 
 
 @lru_cache

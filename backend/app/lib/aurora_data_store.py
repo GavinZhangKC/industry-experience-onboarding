@@ -46,6 +46,53 @@ FROM refuge r
 JOIN location l ON l.location_id = r.location_id
 """
 
+# US 2.2 — predictive alerts. Finds sensors whose last 3 readings are
+# strictly increasing (a genuine upward trend, not merely "currently busy" —
+# that's what busy_areas already covers). Requires the historical data that
+# ingest-hourly-trends.js populates; with only ever-current-hour data, this
+# will simply return no rows, which is a correct, honest result, not a bug.
+TRENDING_AREAS_SQL = """
+WITH ranked AS (
+    SELECT
+        pr.sensor_id,
+        pr.count,
+        pr.recorded_at,
+        ROW_NUMBER() OVER (PARTITION BY pr.sensor_id ORDER BY pr.recorded_at DESC) AS rn
+    FROM pedestrian_reading pr
+    WHERE pr.recorded_at IS NOT NULL
+),
+last_three AS (
+    SELECT sensor_id, count, rn
+    FROM ranked
+    WHERE rn <= 3
+),
+trend AS (
+    SELECT
+        sensor_id,
+        MAX(CASE WHEN rn = 1 THEN count END) AS latest,
+        MAX(CASE WHEN rn = 2 THEN count END) AS prev,
+        MAX(CASE WHEN rn = 3 THEN count END) AS prev2,
+        COUNT(*) AS readings_available
+    FROM last_three
+    GROUP BY sensor_id
+)
+SELECT
+    ps.sensor_id AS id,
+    l.name,
+    ST_Y(l.geom) AS lat,
+    ST_X(l.geom) AS lng,
+    t.latest,
+    t.prev,
+    t.prev2
+FROM trend t
+JOIN pedestrian_sensor ps ON ps.sensor_id = t.sensor_id
+JOIN location l ON l.location_id = ps.location_id
+WHERE t.readings_available >= 3
+  AND t.latest > t.prev
+  AND t.prev > t.prev2
+  AND LOWER(COALESCE(ps.status, '')) NOT IN ('i', 'inactive')
+"""
+
 
 def _weight_from_reading(count: int | float, rolling_average: int | float | None) -> int:
     """Bridge live readings to the 1-5 weight expected by the F2 scorer.
@@ -139,6 +186,25 @@ class AuroraDataStore:
             }
             for record in records
         ]
+
+    @property
+    def trending_areas(self) -> list[dict]:
+        records = self._select(TRENDING_AREAS_SQL)
+        results = []
+        for record in records:
+            latest = float(record["latest"])
+            prev = float(record["prev"])
+            percent_increase = round(((latest - prev) / prev) * 100, 1) if prev > 0 else 0.0
+            results.append({
+                "id": str(record["id"]),
+                "name": str(record["name"]),
+                "lat": float(record["lat"]),
+                "lng": float(record["lng"]),
+                "latest": latest,
+                "prev": prev,
+                "percent_increase": percent_increase,
+            })
+        return results
 
 
 def _create_client(region: str) -> RDSDataClient:

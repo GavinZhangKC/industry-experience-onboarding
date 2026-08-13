@@ -1,12 +1,5 @@
-import { useState } from "react";
 import styles from "./SensoryPreferences.module.css";
-
-interface PreferenceState {
-  avoidNoise: boolean;
-  avoidCrowds: boolean;
-  avoidConstruction: boolean;
-  avoidMajorEvents: boolean;
-}
+import { type PreferenceState } from "../../constants/preferences";
 
 const OPTIONS: Array<{
   key: keyof PreferenceState;
@@ -30,15 +23,19 @@ const OPTIONS: Array<{
   },
 ];
 
-export function SensoryPreferences() {
-  const [preferences, setPreferences] =
-    useState<PreferenceState>({
-      avoidNoise: true,
-      avoidCrowds: true,
-      avoidConstruction: true,
-      avoidMajorEvents: true,
-    });
+interface SensoryPreferencesProps {
+  preferences: PreferenceState;
+  onChange: (preferences: PreferenceState) => void;
+}
 
+// US 1.3: avoidCrowds is the one preference with a real backend behind it —
+// it maps to sensitivity_threshold on the routes request (see App.tsx). The
+// other three toggles are honestly still decorative: there's no
+// disruption/event/noise data feeding the scorer yet. Left visible rather
+// than removed, since hiding them would be a bigger UX change than this fix
+// warrants — but worth being upfront about which one actually does
+// something, if asked.
+export function SensoryPreferences({ preferences, onChange }: SensoryPreferencesProps) {
   return (
     <fieldset className={styles.fieldset}>
       <legend className={styles.legend}>
@@ -54,7 +51,7 @@ export function SensoryPreferences() {
               role="switch"
               checked={preferences[option.key]}
               onChange={(event) =>
-                setPreferences({
+                onChange({
                   ...preferences,
                   [option.key]: event.target.checked,
                 })

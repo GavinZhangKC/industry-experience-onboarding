@@ -12,7 +12,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api import health, quiet_spaces, refuge_detour, routes
+from app.api import health, predictive_alerts, quiet_spaces, refuge_detour, routes
 from app.config import get_settings
 from app.errors import AppError
 from app.middleware.rate_limit import RateLimitMiddleware
@@ -70,6 +70,7 @@ def create_app() -> FastAPI:
     app.include_router(routes.router)
     app.include_router(quiet_spaces.router)
     app.include_router(refuge_detour.router)
+    app.include_router(predictive_alerts.router)
 
     @app.exception_handler(AppError)
     async def handle_app_error(request: Request, exc: AppError):
