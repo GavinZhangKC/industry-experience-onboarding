@@ -163,7 +163,7 @@ def test_plan_routes_all_exceed_threshold_flag_true_when_every_route_flagged():
     assert all(route.exceeds_threshold for route in response.routes)
 
 
-
+def test_plan_routes_raises_when_provider_returns_no_routes():
     maps_client = FakeMapsClient([])
 
     with pytest.raises(NoRoutesFound):
